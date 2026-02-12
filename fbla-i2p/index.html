@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetRPG Pro | Industrial Logic Planner</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="vs-code-dark">
+    <!-- 0. Cinematic Splash Screen -->
+    <div id="splash-screen" class="overlay" style="background: black; z-index: 10000;">
+        <div class="splash-content">
+            <h1 class="splash-text">PetRPG-pro</h1>
+            <div class="splash-sub">// INITIALIZING_SYSTEM_CORE</div>
+        </div>
+    </div>
+
+    <!-- 1. Intro Onboarding Overlay -->
+    <div id="onboarding-overlay" class="overlay">
+        <div class="intro-card">
+            <div id="intro-step-1" class="question-step active">
+                <h1>// INITIALIZING_PET_PROTOCOL</h1>
+                <p>SUBJECT_IDENTIFIER REQUIRED:</p>
+                <input type="text" id="setup-pet-name" class="input-field" placeholder="PET_ID_01">
+                <button class="btn primary" id="next-step-1">INITIALIZE_LINK</button>
+            </div>
+
+            <div id="intro-step-2" class="question-step">
+                <h1>// SELECT_ENTITY_ARCHITECTURE</h1>
+                <p>CHOOSE COMPANION SUB-SYSTEM:</p>
+                <div class="pet-preview-grid">
+                    <div class="preview-item selected" data-type="dog">DOG.js</div>
+                    <div class="preview-item" data-type="cat">CAT.py</div>
+                    <div class="preview-item" data-type="robot">BOT.cpp</div>
+                </div>
+                <button class="btn primary" style="margin-top:20px" id="next-step-2">EXECUTE_DEPLOYMENT</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app">
+        <header>
+            <div class="header-left">
+                <span class="title-tab">MAIN.js</span>
+                <span class="title-tab active">PetRPG_PRO</span>
+                <span id="location-tag" style="margin-left: 20px; font-size: 0.7rem; color: #666;">WORLD_MAP</span>
+            </div>
+            <div class="header-right">
+                <span id="pet-name-display" style="color: var(--vscode-orange); margin-right: 15px;">Subject</span>
+                <span id="level-badge" class="badge">Lv. 1</span> |
+                <span id="currency-display" style="color: var(--vscode-orange)">$150.00</span>
+            </div>
+        </header>
+
+        <main class="main-viewport">
+            <!-- Left Dashboard (Permanent) -->
+            <aside class="sidebar">
+                <div class="stat-group">
+                    <h3>SYSTEM_METRICS</h3>
+
+                    <div class="stat-unit">
+                        <div class="mini-bar-label"><span>FUEL_LOAD</span><span id="hunger-pct">100%</span></div>
+                        <div class="mini-bar">
+                            <div id="hunger-bar" class="mini-bar-fill" style="width:100%"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-unit">
+                        <div class="mini-bar-label"><span>USER_INDEX</span><span id="happiness-pct">100%</span></div>
+                        <div class="mini-bar">
+                            <div id="happiness-bar" class="mini-bar-fill" style="width:100%"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-unit">
+                        <div class="mini-bar-label"><span>CORE_INTEGRITY</span><span id="health-pct">100%</span></div>
+                        <div class="mini-bar">
+                            <div id="health-bar" class="mini-bar-fill" style="width:100%"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-unit">
+                        <div class="mini-bar-label"><span>ENERGY_LOAD</span><span id="energy-pct">100%</span></div>
+                        <div class="mini-bar">
+                            <div id="energy-bar" class="mini-bar-fill" style="width:100%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="financial-tracking" style="margin-top: auto">
+                    <h3>CURRENCY_TRANSACTIONS</h3>
+                    <div id="expense-list">
+                        <!-- Expenses injected here -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Center Game World -->
+            <div id="game-container"></div>
+
+            <!-- Building Overlay Layer -->
+            <div id="station-overlay" class="station-view">
+                <div class="pet-focus">
+                    <div id="pet-interaction-render" style="width: 100%; height: 100%;"></div>
+                    <button id="exit-station-btn" class="btn"
+                        style="position: absolute; top: 20px; left: 20px; color: var(--vscode-orange); border-color: var(--vscode-orange)">←
+                        EXIT_FACILITY</button>
+                    <div id="animation-status"
+                        style="position: absolute; bottom: 20px; right: 20px; font-size: 0.6rem; color: #444;">STATUS:
+                        IDLE</div>
+                </div>
+                <div class="logic-focus">
+                    <div class="panel-header"
+                        style="padding: 10px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.7rem; color: #888;">LOGIC_SPEC.asm</span>
+                        <div class="control-group">
+                            <span id="projected-cost"
+                                style="font-size: 0.7rem; margin-right: 10px; color: #666;">$0.00</span>
+                            <button id="run-btn" class="btn primary"
+                                style="font-size: 0.6rem; padding: 4px 10px;">EXECUTE</button>
+                        </div>
+                    </div>
+                    <div id="blockly-div" style="flex: 1"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Settings Gear Overlay (Modal) -->
+    <button class="gear-toggle" id="gear-btn">⚙</button>
+    <div id="settings-overlay" class="overlay" style="display:none; opacity: 0;">
+        <div class="intro-card" style="max-width: 800px; height: 600px; display: flex; padding: 0;">
+            <div class="settings-sidebar" style="width:200px; border-right: 1px solid #333; padding: 20px;">
+                <h2 style="font-size: 0.8rem; color: #666; margin-bottom: 20px;">COMMAND_CENTER</h2>
+                <div class="settings-nav">
+                    <button class="btn" style="width:100%; text-align: left; margin-bottom: 5px;">README.md</button>
+                    <button class="btn" style="width:100%; text-align: left; margin-bottom: 5px;">METRICS.sys</button>
+                    <button class="btn" id="reset-data-btn" style="width:100%; text-align: left;">RESET_META</button>
+                </div>
+                <button class="btn secondary" id="close-settings" style="margin-top: auto; width:100%;">CLOSE</button>
+            </div>
+            <div class="settings-content" style="flex: 1; padding: 40px; overflow-y: auto;">
+                <div id="settings-pane">
+                    <h1>// USER_MANUAL.txt</h1>
+                    <p style="margin-top: 20px; line-height: 1.6; font-size: 0.9rem;">
+                        <b>[NAVIGATION]</b><br>
+                        WASD / ARROW_KEYS for movement.<br>
+                        SPACEBAR toggles facility interaction.<br><br>
+
+                        <b>[LOGIC_PHASE]</b><br>
+                        Inside a facility, the LOGIC_PLANNER allows sequence injection.
+                        Every block represents a system command with associated CURRENCY_OVERHEAD.<br><br>
+
+                        <b>[BUDGETING]</b><br>
+                        Maintain a positive balance by including 'YIELD_GEN' blocks in your routines.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>

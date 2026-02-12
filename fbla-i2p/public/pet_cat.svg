@@ -1,0 +1,17 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+  <!-- Body -->
+  <rect x="8" y="14" width="16" height="10" fill="#424242"/>
+  <!-- Head -->
+  <rect x="18" y="8" width="10" height="10" fill="#616161"/>
+  <!-- Ears -->
+  <path d="M19 8 L22 4 L22 8 Z" fill="#212121"/>
+  <path d="M25 8 L28 4 L28 8 Z" fill="#212121"/>
+  <!-- Eyes (Glowy) -->
+  <rect x="20" y="11" width="2" height="2" fill="#89ca78"/>
+  <rect x="25" y="11" width="2" height="2" fill="#89ca78"/>
+  <!-- Tail -->
+  <rect x="4" y="10" width="4" height="10" fill="#424242"/>
+  <!-- Legs -->
+  <rect x="10" y="24" width="3" height="4" fill="#212121"/>
+  <rect x="21" y="24" width="3" height="4" fill="#212121"/>
+</svg>
