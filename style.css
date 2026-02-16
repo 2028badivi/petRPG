@@ -65,7 +65,6 @@ h1 {
     /* background: linear-gradient(to right, #fff, var(--accent-secondary)); */
     background: var(--accent-secondary);
     -webkit-background-clip: text;
-    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -391,28 +390,18 @@ input[type="text"]:focus {
 }
 
 .modal-content {
-    background: #0b0f1a;
+    background: #0f172a;
+    /* Deep navy/charcoal */
     border: 1px solid var(--glass-border);
-    padding: 40px;
+    padding: 20px;
     position: relative;
-    width: 90vw;
-    height: 90vh;
+    width: 95vw;
+    height: 95vh;
     display: flex;
     flex-direction: column;
     color: var(--text-main);
-    border-radius: 20px;
-    box-shadow: 0 0 100px rgba(0, 0, 0, 0.8), inset 0 0 50px rgba(124, 58, 237, 0.05);
-}
-
-#modal-title {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-    background: linear-gradient(to right, #fff, var(--accent-secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    font-weight: 700;
+    border-radius: 16px;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
 }
 
 .close-modal {
@@ -439,47 +428,17 @@ input[type="text"]:focus {
 .left-panel,
 .right-panel {
     flex: 1;
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(10, 15, 30, 0.9) 100%);
+    background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--glass-border);
-    padding: 35px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    border-radius: 20px;
-    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.4), 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-
-.modal-pet-display {
-    height: 180px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: radial-gradient(circle at center, rgba(124, 58, 237, 0.1) 0%, transparent 70%);
-    border-radius: 16px;
-    margin-bottom: 25px;
-    border: 1px solid var(--glass-border);
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-}
-
-#modal-pet-sprite {
-    position: relative;
-    transform: scale(4.5);
-    image-rendering: pixelated;
-    margin-top: -35px;
-    margin-left: -35px;
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.1));
+    border-radius: 12px;
 }
 
 .stats-container {
     margin-top: 10px;
     transition: filter 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-    /* More vertical space */
-    flex: 1;
-    justify-content: flex-start;
 }
 
 .stats-container.pulse {
@@ -504,18 +463,13 @@ input[type="text"]:focus {
 }
 
 .stat-item {
-    margin-bottom: 5px;
+    margin-bottom: 20px;
 }
 
 .stat-item label {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    font-weight: 500;
-    font-size: 0.9rem;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
 }
 
 .bar-bg {
@@ -552,27 +506,26 @@ input[type="text"]:focus {
     background: gold;
 }
 
-/* Specific styling for Money to make it stand out */
-.stat-item:last-child {
-    background: rgba(46, 204, 113, 0.08);
-    padding: 20px;
-    border-radius: 12px;
-    border: 1px solid rgba(46, 204, 113, 0.3);
-    margin-top: 20px;
+.stat-val {
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+.modal-pet-display {
+    height: 150px;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--glass-border);
+    margin-bottom: 10px;
+    border-radius: 8px;
 }
 
-.stat-item:last-child label {
-    color: #2ecc71;
-    margin-bottom: 5px;
-    font-size: 1rem;
-    font-weight: 700;
-}
-
-.stat-item:last-child .stat-val {
-    margin-top: 0;
+.modal-pet-display .pet {
+    position: relative;
+    transform: scale(5);
+    animation: none !important;
 }
 
 .block-editor {
