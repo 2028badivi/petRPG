@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentUser = null;
     let currentStep = 1;
 
-    // Global Game State
+
     window.gameStats = window.gameStats || {
         health: 75,
         hunger: 80,
