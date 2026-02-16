@@ -106,12 +106,19 @@
         <div class="modal-content">
             <button id="close-modal" class="close-modal">&times;</button>
             <h2 id="modal-title">Station</h2>
-            <div id="vet-content" class="vet-interface" style="display: none;">
+            <div id="station-interface" class="vet-interface" style="display: none;">
                 <div class="left-panel">
                     <div class="modal-pet-display">
                         <div id="modal-pet-sprite" class="pet"></div>
                     </div>
                     <div class="stats-container">
+                        <div class="stat-item">
+                            <label>Health</label>
+                            <div class="bar-bg">
+                                <div id="bar-health" class="bar-fill"></div>
+                            </div>
+                            <div id="val-health" class="stat-val">0 / 100</div>
+                        </div>
                         <div class="stat-item">
                             <label>Happiness</label>
                             <div class="bar-bg">
@@ -135,22 +142,20 @@
                         </div>
                         <div class="stat-item">
                             <label>Money</label>
-                            <div class="bar-bg">
-                                <div id="bar-money" class="bar-fill"></div>
-                            </div>
-                            <div id="val-money" class="stat-val">$0</div>
+                            <div id="val-money" class="stat-val"
+                                style="font-size: 1.5rem; font-weight: bold; color: #2ecc71;">$0</div>
                         </div>
                     </div>
                 </div>
                 <div class="right-panel">
-                    <h3>Pet Logic Editor</h3>
+                    <h3 id="station-subtitle">Pet Logic Editor</h3>
                     <div class="block-editor">
                         <div id="blocklyDiv"></div>
                     </div>
                     <button id="execute-btn" class="primary-btn">Execute Logic</button>
                 </div>
             </div>
-            <div id="generic-content">
+            <div id="generic-content" style="display: none;">
                 <p>Coming soon...</p>
             </div>
         </div>
@@ -166,6 +171,8 @@
             <block type="feed_pet"></block>
             <block type="play_pet"></block>
             <block type="wash_pet"></block>
+            <block type="heal_pet"></block>
+            <block type="daily_checkup"></block>
         </category>
         <category name="Logic" colour="210">
             <block type="controls_if"></block>
