@@ -9,7 +9,14 @@ document.addEventListener('DOMContentLoaded', () => {
         happiness: 67,
         hygiene: 85,
         money: 50,
-        currentFood: 23
+        currentFood: 23,
+        userLvl: 15
+    };
+
+    let scheduledActions = {
+        'Vet': { summary: 'None', xml: null },
+        'Grocery Store': { summary: 'None', xml: null },
+        'Home': { summary: 'None', xml: null }
     };
 
     const character = document.getElementById('character');
@@ -53,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
             init: function () {
                 this.appendDummyInput()
                     .appendField("feed ")
-                    .appendField(new Blockly.FieldNumber(0, 0, 100), "times")
+                    .appendField(new Blockly.FieldNumber(0, 0, window.gameStats.currentFood), "times")
                     .appendField("times");
                 this.setPreviousStatement(true, null);
                 this.setNextStatement(true, null);
@@ -71,6 +78,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.setNextStatement(true, null);
                 this.setColour(150);
                 this.setTooltip("Heals pet for 20 health. Costs $10.");
+                this.setHelpUrl("");
+            }
+        };
+        Blockly.Blocks['buy_food'] = {
+            init: function () {
+                this.appendDummyInput()
+                    .appendField("buy")
+                    .appendField(new Blockly.FieldNumber(0, 0, 50), "food")
+                    .appendField("food ($1/ea)");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(30);
+                this.setTooltip("Buy food ($1/ea)");
                 this.setHelpUrl("");
             }
         };
@@ -124,14 +144,19 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             func['feed_pet'] = function (block) {
-                return 'window.gameActions.feedPet();\n';
+                const times = Number(block.getFieldValue("times"));
+                return `window.gameActions.feedPet(${times});\n`;
             };
             func['play_pet'] = function (block) {
-                return 'window.gameActions.playPet();\n';
+                return `window.gameActions.playPet();\n`;
             };
             func['wash_pet'] = function (block) {
-                return 'window.gameActions.washPet();\n';
+                return `window.gameActions.washPet();\n`;
             };
+            func['buy_food'] = function (block) {
+                const amount = Number(block.getFieldValue("food"));
+                return `window.gameActions.buyFood(${amount});\n`;
+            }
         } else {
             console.error("Blockly Generator (JavaScript) not found!");
         }
@@ -157,9 +182,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log("Need $2 for checkup!");
             }
         },
-        feedPet: () => { console.log("Feeding..."); },
-        playPet: () => { console.log("Playing..."); },
-        washPet: () => { console.log("Washing..."); }
+        feedPet: (times) => {
+            if (window.gameStats.currentFood >= times) {
+                window.gameStats.hunger += Math.round((times * 2.5) / (1 + (window.gameStats.userLvl * 0.025))) / 10;
+                window.gameStats.hunger = Math.min(100, window.gameStats.hunger);
+                window.gameStats.currentFood -= times;
+                window.gameStats.money = Math.max(0, window.gameStats.currentFood);
+                console.log("Feeding...");
+                console.log(window.gameStats.currentFood);
+            } else {
+                console.log("Need more food to feed pet!");
+            }
+
+        },
+        playPet: () => {
+            window.gameStats.happiness += (5) / (1 + (window.gameStats.userLvl * 0.025));
+            console.log("Playing...");
+        },
+        washPet: () => { console.log("Washing..."); },
+        
+        buyFood: (amount) => {
+            if (window.gameStats.money >= amount) {
+                window.gameStats.money -= amount;
+                window.gameStats.currentFood += amount;
+            }else{
+                console.log(`You do not have the required $${amount}!`);
+            }
+            
+        },
     };
 
     checkSession();
@@ -210,6 +260,168 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCharacterPosition();
         updatePetPosition();
         window.addEventListener('keydown', handleInput);
+
+
+        const savedActions = localStorage.getItem(`user_scheduled_actions_${currentUser}`);
+        if (savedActions) {
+            scheduledActions = JSON.parse(savedActions);
+        }
+        updateSidebarUI();
+    }
+
+    function updateSidebarUI() {
+        const list = document.getElementById('scheduled-actions-list');
+        if (!list) return;
+
+        list.innerHTML = '';
+        Object.keys(scheduledActions).forEach(station => {
+            const item = document.createElement('div');
+            item.className = 'station-status-item';
+            // const summary = typeof scheduledActions[station] === 'string' ? scheduledActions[station] : (scheduledActions[station].summary || 'None');
+
+            const data = scheduledActions[station];
+            const summary = typeof data === 'string' ? data : (data.summary || 'None');
+
+            item.innerHTML = `
+                <span class="station-name">${station}:</span>
+                <span class="action-text">${summary}</span>
+            `;
+            list.appendChild(item);
+        });
+
+        updateMiniStatsUI();
+    }
+
+    function updateMiniStatsUI() {
+        const stats = window.gameStats;
+        const colors = {
+            health: '#ff4757',
+            happiness: '#2ed573',
+            hunger: '#ff4757',
+            hygiene: '#22d3ee'
+        };
+
+        ['health', 'happiness', 'hunger', 'hygiene'].forEach(id => {
+            const el = document.getElementById(`mini-${id}`);
+            if (el) {
+                const val = stats[id] || 0;
+                const color = colors[id] || 'var(--accent-primary)';
+                el.style.background = `conic-gradient(${color} ${val}%, transparent ${val}%)`;
+            }
+        });
+
+        const miniMoney = document.getElementById('mini-val-money');
+        if (miniMoney) {
+            miniMoney.textContent = `$${stats.money || 0}`;
+        }
+    }
+
+    async function executeAllActions() {
+        if (!workspace && typeof Blockly === 'undefined') {
+            alert("Logic engine not ready.");
+            return;
+        }
+
+        console.log("Global Execution Started...");
+        const btn = document.getElementById('execute-all-btn');
+        const originalText = btn.textContent;
+        btn.textContent = 'Executing... ⚡';
+        btn.disabled = true;
+
+
+        const headlessWorkspace = new Blockly.Workspace();
+
+        let fullCode = '';
+
+        for (const station of Object.keys(scheduledActions)) {
+            const data = scheduledActions[station];
+            if (data && data.xml && data.xml !== 'None') {
+                try {
+                    headlessWorkspace.clear();
+                    const dom = Blockly.utils.xml.textToDom(data.xml);
+                    Blockly.Xml.domToWorkspace(dom, headlessWorkspace);
+                    const code = Blockly.JavaScript.workspaceToCode(headlessWorkspace);
+                    fullCode += `// ${station}\n${code}\n`;
+                } catch (e) {
+                    console.error(`Error generating code for ${station}:`, e);
+                }
+            }
+        }
+
+        headlessWorkspace.dispose();
+
+        if (fullCode.trim()) {
+            try {
+
+                eval(fullCode);
+
+
+                syncUIWithVariables();
+                localStorage.setItem(`user_variables_${currentUser}`, JSON.stringify(window.gameStats));
+
+                btn.textContent = 'Success! ✨';
+                btn.style.background = '#2ecc71';
+            } catch (e) {
+                console.error("Global execution error:", e);
+                btn.textContent = 'Error ❌';
+            }
+        } else {
+            btn.textContent = 'No actions 💤';
+        }
+
+        setTimeout(() => {
+            btn.textContent = originalText;
+            btn.disabled = false;
+            btn.style.background = '';
+        }, 2000);
+    }
+
+
+    function summarizeWorkspace(ws) {
+        if (!ws) return 'None';
+        const topBlocks = ws.getTopBlocks(false);
+        if (topBlocks.length === 0) return 'None';
+
+        const summaries = [];
+        topBlocks.forEach(block => {
+            summaries.push(getBlockSummary(block));
+        });
+
+        return summaries.join('<br>') || 'None';
+    }
+
+    function getBlockSummary(block) {
+        let text = '';
+        const type = block.type;
+
+        if (type === 'feed_pet') {
+            const times = block.getFieldValue('times');
+            text = `Feed ${times} times`;
+        } else if (type === 'heal_pet') {
+            text = 'Heal pet ($10)';
+        } else if (type === 'daily_checkup') {
+            const times = block.getFieldValue('TIMES');
+            text = `Check-up ${times} times ($2 ea)`;
+        } else if (type === 'play_pet') {
+            text = 'Play with pet';
+        } else if (type === 'wash_pet') {
+            text = 'Wash pet';
+        } else if (type === 'controls_if') {
+            text = 'Conditional logic...';
+        } else if (type === 'buy_food') {
+            const times = block.getFieldValue('food');
+            text = `Buy ${times} food`;
+        } else {
+            text = 'Custom action';
+        }
+
+        const nextBlock = block.getNextBlock();
+        if (nextBlock) {
+            text += ' → ' + getBlockSummary(nextBlock);
+        }
+        return text;
+
+
     }
 
     function generateStations() {
@@ -317,10 +529,40 @@ document.addEventListener('DOMContentLoaded', () => {
                     trashcan: true,
                     theme: 'Dark'
                 });
+
+                workspace.addChangeListener((e) => {
+
+                    if (e.type === Blockly.Events.BLOCK_MOVE || e.type === Blockly.Events.BLOCK_CHANGE || e.type === Blockly.Events.BLOCK_DELETE || e.type === Blockly.Events.BLOCK_CREATE) {
+                        const stationName = modalTitle.textContent;
+                        const summary = summarizeWorkspace(workspace);
+                        const xml = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace));
+
+                        const stationKey = Object.keys(scheduledActions).find(k => k.toLowerCase() === stationName.toLowerCase()) || stationName;
+
+                        scheduledActions[stationKey] = { summary, xml };
+                        localStorage.setItem(`user_scheduled_actions_${currentUser}`, JSON.stringify(scheduledActions));
+                        updateSidebarUI();
+                    }
+                });
             }
 
             if (workspace) {
                 updateToolboxForStation(title.toLowerCase());
+
+                workspace.clear();
+
+         
+                const stationKey = Object.keys(scheduledActions).find(k => k.toLowerCase() === title.toLowerCase()) || title;
+                const savedData = scheduledActions[stationKey];
+
+                if (savedData && savedData.xml && savedData.xml !== 'None') {
+                    try {
+                        const dom = Blockly.utils.xml.textToDom(savedData.xml);
+                        Blockly.Xml.domToWorkspace(dom, workspace);
+                    } catch (e) {
+                        console.error("Error loading workspace XML:", e);
+                    }
+                }
             }
 
             setTimeout(() => {
@@ -352,7 +594,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <block type="heal_pet"></block>
                 <block type="daily_checkup"></block>`;
         } else if (station === 'grocery store') {
-            actionBlocks = `<block type="feed_pet"></block>`;
+            actionBlocks = `<block type="feed_pet"></block><block type = "buy_food"></block>`;
         } else if (station === 'home') {
             actionBlocks = `
                 <block type="play_pet"></block>
@@ -389,6 +631,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (valMoney) {
             valMoney.textContent = `$${stats.money || 0}`;
         }
+
+        updateMiniStatsUI();
     }
 
     function updateStat(id, val) {
@@ -418,6 +662,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem(`user_variables_${currentUser}`, JSON.stringify(window.gameStats));
                 console.log("Execution successful. New stats:", window.gameStats);
 
+                const stationName = modalTitle.textContent;
+                scheduledActions[stationName] = summarizeWorkspace(workspace);
+                localStorage.setItem(`user_scheduled_actions_${currentUser}`, JSON.stringify(scheduledActions));
+                updateSidebarUI();
 
                 const btn = document.getElementById('execute-btn');
                 const originalText = btn.textContent;
@@ -521,4 +769,6 @@ document.addEventListener('DOMContentLoaded', () => {
         showScreen('auth');
     });
 
+
+    document.getElementById('execute-all-btn').addEventListener('click', executeAllActions);
 });
