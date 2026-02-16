@@ -2,19 +2,17 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentUser = null;
     let currentStep = 1;
 
-    let userLvl = 1;
-    const variables = {}; // join back meeting u disconnected
 
+    window.gameStats = window.gameStats || {
+        health: 75,
+        hunger: 80,
+        happiness: 67,
+        hygiene: 85,
+        money: 50,
+        currentFood: 23
+    };
 
     const character = document.getElementById('character');
-    variables["health"] = 75;
-    variables["hunger"] = 80;
-    variables["happiness"] = 67;
-    variables["hygiene"] = 85;
-    variables["money"] = 50;
-    variables["currentFood"] = 23;
-    variables["isSick"] = variables["health"] < 50;
-    variables["isHungry"] = variables["hunger"] < 50;
 
     const screens = {
         auth: document.getElementById('auth-screen'),
@@ -51,35 +49,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function defineCustomBlocks() {
         if (typeof Blockly === 'undefined') return;
 
-        Blockly.Blocks['move_forward'] = {
-            init: function () {
-                this.appendDummyInput().appendField("move forward");
-                this.setPreviousStatement(true, null);
-                this.setNextStatement(true, null);
-                this.setColour(210);
-            }
-        };
-        Blockly.Blocks['turn_left'] = {
-            init: function () {
-                this.appendDummyInput().appendField("turn left");
-                this.setPreviousStatement(true, null);
-                this.setNextStatement(true, null);
-                this.setColour(210);
-            }
-        };
-        Blockly.Blocks['turn_right'] = {
-            init: function () {
-                this.appendDummyInput().appendField("turn right");
-                this.setPreviousStatement(true, null);
-                this.setNextStatement(true, null);
-                this.setColour(210);
-            }
-        };
         Blockly.Blocks['feed_pet'] = {
             init: function () {
                 this.appendDummyInput()
                     .appendField("feed ")
-                    .appendField(new Blockly.FieldNumber(0, 0, variables["currentFood"]), "times")
+                    .appendField(new Blockly.FieldNumber(0, 0, 100), "times")
                     .appendField("times");
                 this.setPreviousStatement(true, null);
                 this.setNextStatement(true, null);
@@ -91,9 +65,27 @@ document.addEventListener('DOMContentLoaded', () => {
         Blockly.Blocks['heal_pet'] = {
             init: function () {
                 this.appendDummyInput()
-                    .appendField("heal pet");
+                    .appendField("heal pet ($10)")
+                    .appendField(new Blockly.FieldLabel("→ +20 Health"), "BENEFIT");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
                 this.setColour(150);
-                this.setTooltip("");
+                this.setTooltip("Heals pet for 20 health. Costs $10.");
+                this.setHelpUrl("");
+            }
+        };
+
+        Blockly.Blocks['daily_checkup'] = {
+            init: function () {
+                this.appendDummyInput()
+                    .appendField("do a check-up ($2)")
+                    .appendField(new Blockly.FieldNumber(1, 1, 10), "TIMES")
+                    .appendField("times")
+                    .appendField(new Blockly.FieldLabel("→ +5 Health/ea"), "BENEFIT");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(230);
+                this.setTooltip("Check-up increases health by 5. Costs $2.");
                 this.setHelpUrl("");
             }
         };
@@ -106,19 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.setColour(120);
             }
         };
-        Blockly.Blocks['daily_checkup'] = {
-            init: function () {
-                this.appendDummyInput()
-                    .appendField("do a check-up")
-                    .appendField(new Blockly.FieldNumber(0, 0, 24), "NAME")
-                    .appendField("times");
-                this.setPreviousStatement(true, null);
-                this.setNextStatement(true, null);
-                this.setColour(230);
-                this.setTooltip("");
-                this.setHelpUrl("");
-            }
-        };
+
         Blockly.Blocks['wash_pet'] = {
             init: function () {
                 this.appendDummyInput().appendField("wash pet");
@@ -127,7 +107,61 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.setColour(120);
             }
         };
+
+
+        const generator = (typeof Blockly !== 'undefined' && Blockly.JavaScript) || (window.javascript && window.javascript.javascriptGenerator);
+
+        if (generator) {
+            const func = generator.forBlock || generator;
+
+            func['heal_pet'] = function (block) {
+                return 'gameActions.healPet();\n';
+            };
+
+            func['daily_checkup'] = function (block) {
+                const times = block.getFieldValue('TIMES') || 1;
+                return `for (var i = 0; i < ${times}; i++) { window.gameActions.dailyCheckup(); }\n`;
+            };
+
+            func['feed_pet'] = function (block) {
+                return 'window.gameActions.feedPet();\n';
+            };
+            func['play_pet'] = function (block) {
+                return 'window.gameActions.playPet();\n';
+            };
+            func['wash_pet'] = function (block) {
+                return 'window.gameActions.washPet();\n';
+            };
+        } else {
+            console.error("Blockly Generator (JavaScript) not found!");
+        }
     }
+
+
+    window.gameActions = {
+        healPet: () => {
+            if (window.gameStats.money >= 10) {
+                window.gameStats.money -= 10;
+                window.gameStats.health = Math.min(100, window.gameStats.health + 20);
+                console.log("Healed! Health:", window.gameStats.health);
+            } else {
+                console.log("Need $10 to heal!");
+            }
+        },
+        dailyCheckup: () => {
+            if (window.gameStats.money >= 2) {
+                window.gameStats.money -= 2;
+                window.gameStats.health = Math.min(100, window.gameStats.health + 5);
+                console.log("Checkup! Health:", window.gameStats.health);
+            } else {
+                console.log("Need $2 for checkup!");
+            }
+        },
+        feedPet: () => { console.log("Feeding..."); },
+        playPet: () => { console.log("Playing..."); },
+        washPet: () => { console.log("Washing..."); }
+    };
+
     checkSession();
 
     function checkSession() {
@@ -159,6 +193,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startGame() {
         displayName.textContent = currentUser;
+
+        const storedVars = localStorage.getItem(`user_variables_${currentUser}`);
+        if (storedVars) {
+            Object.assign(window.gameStats, JSON.parse(storedVars));
+        }
 
 
         const userData = JSON.parse(localStorage.getItem(`user_data_${currentUser}`));
@@ -251,61 +290,105 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function openModal(title) {
         modalTitle.textContent = title;
-        const vetContent = document.getElementById('vet-content');
+        const stationInterface = document.getElementById('station-interface');
         const genericContent = document.getElementById('generic-content');
         const modalPetSprite = document.getElementById('modal-pet-sprite');
+        const stationSubtitle = document.getElementById('station-subtitle');
 
-        if (title.toLowerCase() === 'vet') {
-            vetContent.style.display = 'flex';
+        const validStations = ['vet', 'grocery store', 'home'];
+        const isKnownStation = validStations.includes(title.toLowerCase());
+
+        if (isKnownStation) {
+            stationInterface.style.display = 'flex';
             genericContent.style.display = 'none';
-
+            stationSubtitle.textContent = `${title} Logic Editor`;
 
             const userData = JSON.parse(localStorage.getItem(`user_data_${currentUser}`)) || {};
             const petType = userData?.q2 || 'cat';
             modalPetSprite.className = `pet ${petType}`;
 
-            
             syncUIWithVariables();
-
-
-            function syncUIWithVariables() {
-                updateStat('happiness', variables["happiness"]);
-                updateStat('health', variables["health"]);
-                updateStat('hygiene', variables["hygiene"]);
-
-                document.getElementById('bar-money').style.width =
-                    `${Math.min(variables["money"], 100)}%`;
-
-                document.getElementById('val-money').textContent = `$${variables["money"]}`;
-
-            }
-
 
             if (!workspace && typeof Blockly !== 'undefined') {
                 defineCustomBlocks();
                 workspace = Blockly.inject('blocklyDiv', {
                     toolbox: document.getElementById('toolbox'),
                     scrollbars: true,
-                    trashcan: true
+                    trashcan: true,
+                    theme: 'Dark'
                 });
-                if (title === "Vet") {
-                    const newToolbox = document.getElementById("vetToolbox");
-                    workspace.updateToolbox(newToolbox);
-                }
             }
 
+            if (workspace) {
+                updateToolboxForStation(title.toLowerCase());
+            }
 
             setTimeout(() => {
                 if (workspace) Blockly.svgResize(workspace);
             }, 50);
 
         } else {
-            vetContent.style.display = 'none';
+            stationInterface.style.display = 'none';
             genericContent.style.display = 'block';
         }
 
         modal.classList.add('active');
         isModalOpen = true;
+    }
+
+    function updateToolboxForStation(station) {
+        let toolboxXml = '';
+
+        const logicCategory = `
+            <category name="Logic" colour="210">
+                <block type="controls_if"></block>
+                <block type="logic_compare"></block>
+                <block type="logic_operation"></block>
+            </category>`;
+
+        let actionBlocks = '';
+        if (station === 'vet') {
+            actionBlocks = `
+                <block type="heal_pet"></block>
+                <block type="daily_checkup"></block>`;
+        } else if (station === 'grocery store') {
+            actionBlocks = `<block type="feed_pet"></block>`;
+        } else if (station === 'home') {
+            actionBlocks = `
+                <block type="play_pet"></block>
+                <block type="wash_pet"></block>`;
+        }
+
+        toolboxXml = `<xml>
+            <category name="Actions" colour="120">
+                ${actionBlocks}
+            </category>
+            ${logicCategory}
+        </xml>`;
+
+        workspace.updateToolbox(toolboxXml);
+    }
+
+    function syncUIWithVariables() {
+        const stats = window.gameStats;
+        console.log("Syncing UI with stats:", stats);
+
+        const statsContainer = document.querySelector('.stats-container');
+        if (statsContainer) {
+            statsContainer.classList.remove('pulse');
+            void statsContainer.offsetWidth;
+            statsContainer.classList.add('pulse');
+        }
+
+        updateStat('happiness', stats.happiness || 0);
+        updateStat('health', stats.health || 0);
+        updateStat('hygiene', stats.hygiene || 0);
+        updateStat('hunger', stats.hunger || 0);
+
+        const valMoney = document.getElementById('val-money');
+        if (valMoney) {
+            valMoney.textContent = `$${stats.money || 0}`;
+        }
     }
 
     function updateStat(id, val) {
@@ -328,9 +411,28 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('execute-btn').addEventListener('click', () => {
         if (workspace && typeof Blockly !== 'undefined') {
             const code = Blockly.JavaScript.workspaceToCode(workspace);
-            alert('Generated Code:\n' + (code || '// No blocks yet!'));
+            console.log("Executing generated logic:\n", code);
+            try {
+                eval(code);
+                syncUIWithVariables();
+                localStorage.setItem(`user_variables_${currentUser}`, JSON.stringify(window.gameStats));
+                console.log("Execution successful. New stats:", window.gameStats);
+
+
+                const btn = document.getElementById('execute-btn');
+                const originalText = btn.textContent;
+                btn.textContent = 'Logic Executed! ✨';
+                btn.classList.add('success-btn');
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('success-btn');
+                }, 1500);
+            } catch (e) {
+                console.error("Execution error:", e);
+                alert("Error in logic execution! Check console.");
+            }
         } else {
-            alert('we gotta update the code execution stuffs');
+            alert('Logic editor not ready.');
         }
     });
     function handleMovement(key) {
@@ -409,14 +511,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    function syncUIWithVariables(){
-        updateStat('happiness', variables["happiness"]);
-        updateStat('health', variables["hygiene"]);
 
-        document.getElementById('bar-money').style.width = `${Math.min(variables["money"], 100)}%`;
-
-        document.getElementById('val-money').textContent = `$${variables["money"]}`;
-    }
 
     logoutBtn.addEventListener('click', () => {
         localStorage.removeItem('neo_user');
@@ -426,9 +521,4 @@ document.addEventListener('DOMContentLoaded', () => {
         showScreen('auth');
     });
 
-
-    //blockly funcs
-    function feedPet(times){
-        variables["hunger"] += (times * 0.1) / (1 + (userLvl * 0.05));
-    }
 });
