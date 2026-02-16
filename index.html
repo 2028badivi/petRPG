@@ -10,6 +10,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+    <script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
+    <script src="https://unpkg.com/blockly/javascript_compressed.js"></script>
+    <script src="https://unpkg.com/blockly/msg/en.js"></script>
 </head>
 
 <body>
@@ -141,7 +145,7 @@
                 <div class="right-panel">
                     <h3>Pet Logic Editor</h3>
                     <div class="block-editor">
-                        <p>(we gotta add the code thingy here)</p>
+                        <div id="blocklyDiv"></div>
                     </div>
                     <button id="execute-btn" class="primary-btn">Execute Logic</button>
                 </div>
@@ -151,6 +155,24 @@
             </div>
         </div>
     </div>
+
+    <xml id="toolbox" style="display: none">
+        <category name="Movement" colour="210">
+            <block type="move_forward"></block>
+            <block type="turn_left"></block>
+            <block type="turn_right"></block>
+        </category>
+        <category name="Actions" colour="120">
+            <block type="feed_pet"></block>
+            <block type="play_pet"></block>
+            <block type="wash_pet"></block>
+        </category>
+        <category name="Logic" colour="210">
+            <block type="controls_if"></block>
+            <block type="logic_compare"></block>
+            <block type="logic_operation"></block>
+        </category>
+    </xml>
 
     <script src="script.js"></script>
 </body>

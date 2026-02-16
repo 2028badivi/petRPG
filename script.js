@@ -34,10 +34,60 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
     const stepSize = 4;
     let isModalOpen = false;
+    let workspace = null;
 
+    function defineCustomBlocks() {
+        if (typeof Blockly === 'undefined') return;
 
-
-
+        Blockly.Blocks['move_forward'] = {
+            init: function () {
+                this.appendDummyInput().appendField("move forward");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(210);
+            }
+        };
+        Blockly.Blocks['turn_left'] = {
+            init: function () {
+                this.appendDummyInput().appendField("turn left");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(210);
+            }
+        };
+        Blockly.Blocks['turn_right'] = {
+            init: function () {
+                this.appendDummyInput().appendField("turn right");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(210);
+            }
+        };
+        Blockly.Blocks['feed_pet'] = {
+            init: function () {
+                this.appendDummyInput().appendField("feed pet");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(120);
+            }
+        };
+        Blockly.Blocks['play_pet'] = {
+            init: function () {
+                this.appendDummyInput().appendField("play with pet");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(120);
+            }
+        };
+        Blockly.Blocks['wash_pet'] = {
+            init: function () {
+                this.appendDummyInput().appendField("wash pet");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(120);
+            }
+        };
+    }
     checkSession();
 
     function checkSession() {
@@ -188,6 +238,21 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('bar-money').style.width = '100%';
             document.getElementById('val-money').textContent = `$${stats.money}`;
 
+
+            if (!workspace && typeof Blockly !== 'undefined') {
+                defineCustomBlocks();
+                workspace = Blockly.inject('blocklyDiv', {
+                    toolbox: document.getElementById('toolbox'),
+                    scrollbars: true,
+                    trashcan: true
+                });
+            }
+
+
+            setTimeout(() => {
+                if (workspace) Blockly.svgResize(workspace);
+            }, 50);
+
         } else {
             vetContent.style.display = 'none';
             genericContent.style.display = 'block';
@@ -215,7 +280,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     document.getElementById('execute-btn').addEventListener('click', () => {
-        alert('we gotta update the code execution stuffs');
+        if (workspace && typeof Blockly !== 'undefined') {
+            const code = Blockly.JavaScript.workspaceToCode(workspace);
+            alert('Generated Code:\n' + (code || '// No blocks yet!'));
+        } else {
+            alert('we gotta update the code execution stuffs');
+        }
     });
     function handleMovement(key) {
         let nx = characterPos.x;
