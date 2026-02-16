@@ -215,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const genericContent = document.getElementById('generic-content');
         const modalPetSprite = document.getElementById('modal-pet-sprite');
 
-        if (title.toLowerCase() === 'vet') {
+        if (['vet', 'home', 'grocery store'].includes(title.toLowerCase())) {
             vetContent.style.display = 'flex';
             genericContent.style.display = 'none';
 
