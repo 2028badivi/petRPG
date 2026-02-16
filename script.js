@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
-        // Generators - Support both old and new Blockly versions
+
         const generator = (typeof Blockly !== 'undefined' && Blockly.JavaScript) || (window.javascript && window.javascript.javascriptGenerator);
 
         if (generator) {
@@ -413,15 +413,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const code = Blockly.JavaScript.workspaceToCode(workspace);
             console.log("Executing generated logic:\n", code);
             try {
-                // Evaluate generated code
                 eval(code);
-                // Sync UI after execution
                 syncUIWithVariables();
-                // Save state
                 localStorage.setItem(`user_variables_${currentUser}`, JSON.stringify(window.gameStats));
                 console.log("Execution successful. New stats:", window.gameStats);
 
-                // Visual success feedback on button
+
                 const btn = document.getElementById('execute-btn');
                 const originalText = btn.textContent;
                 btn.textContent = 'Logic Executed! ✨';
