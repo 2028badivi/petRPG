@@ -1,8 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
-
     let currentUser = null;
     let currentStep = 1;
 
+    const variables = {}; // join back meeting u disconnected
+
+
+    const character = document.getElementById('character');
+    variables["health"] = 75;
+    variables["hunger"] = 80;
+    variables["happiness"] = 67;
+    variables["hygiene"] = 85;
+    variables["money"] = 50;
+    variables["currentFood"] = 23;
+    variables["isSick"] = variables["health"] < 50;
+    variables["isHungry"] = variables["hunger"] < 50;
 
     const screens = {
         auth: document.getElementById('auth-screen'),
@@ -65,18 +76,46 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         Blockly.Blocks['feed_pet'] = {
             init: function () {
-                this.appendDummyInput().appendField("feed pet");
+                this.appendDummyInput()
+                    .appendField("feed ")
+                    .appendField(new Blockly.FieldNumber(0, 0, variables["currentFood"]), "days")
+                    .appendField("times");
                 this.setPreviousStatement(true, null);
                 this.setNextStatement(true, null);
-                this.setColour(120);
+                this.setColour(230);
+                this.setTooltip("");
+                this.setHelpUrl("");
             }
         };
+        Blockly.Blocks['heal_pet'] = {
+            init: function () {
+                this.appendDummyInput()
+                    .appendField("heal pet");
+                this.setColour(150);
+                this.setTooltip("");
+                this.setHelpUrl("");
+            }
+        };
+
         Blockly.Blocks['play_pet'] = {
             init: function () {
                 this.appendDummyInput().appendField("play with pet");
                 this.setPreviousStatement(true, null);
                 this.setNextStatement(true, null);
                 this.setColour(120);
+            }
+        };
+        Blockly.Blocks['daily_checkup'] = {
+            init: function () {
+                this.appendDummyInput()
+                    .appendField("do a check-up")
+                    .appendField(new Blockly.FieldNumber(0, 0, 24), "NAME")
+                    .appendField("times");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(230);
+                this.setTooltip("");
+                this.setHelpUrl("");
             }
         };
         Blockly.Blocks['wash_pet'] = {
@@ -215,7 +254,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const genericContent = document.getElementById('generic-content');
         const modalPetSprite = document.getElementById('modal-pet-sprite');
 
-        if (['vet', 'home', 'grocery store'].includes(title.toLowerCase())) {
+        /*
+script.js:310 Uncaught TypeError: Cannot read properties of null (reading 'style')
+    at updateStat (script.js:310:45)
+    at syncUIWithVariables (script.js:275:17)
+    at openModal (script.js:270:13)
+    at script.js:246:17
+    at Array.forEach (<anonymous>)
+    at checkStationInteraction (script.js:243:18)
+    at handleInput (script.js:235:13)
+        */
+        if (title.toLowerCase() === 'vet') {
             vetContent.style.display = 'flex';
             genericContent.style.display = 'none';
 
@@ -224,19 +273,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const petType = userData?.q2 || 'cat';
             modalPetSprite.className = `pet ${petType}`;
 
+            
+            syncUIWithVariables();
 
-            const stats = {
-                happiness: 75,
-                hunger: 40,
-                hygiene: 90,
-                money: 150
-            };
 
-            updateStat('happiness', stats.happiness);
-            updateStat('hunger', stats.hunger);
-            updateStat('hygiene', stats.hygiene);
-            document.getElementById('bar-money').style.width = '100%';
-            document.getElementById('val-money').textContent = `$${stats.money}`;
+            function syncUIWithVariables() {
+                updateStat('happiness', variables["happiness"]);
+                updateStat('health', variables["health"]);
+                updateStat('hygiene', variables["hygiene"]);
+
+                document.getElementById('bar-money').style.width =
+                    `${Math.min(variables["money"], 100)}%`;
+
+                document.getElementById('val-money').textContent = `$${variables["money"]}`;
+
+            }
 
 
             if (!workspace && typeof Blockly !== 'undefined') {
@@ -362,6 +413,15 @@ document.addEventListener('DOMContentLoaded', () => {
         startGame();
     });
 
+
+    function syncUIWithVariables(){
+        updateStat('happiness', variables["happiness"]);
+        updateStat('health', variables["hygiene"]);
+
+        document.getElementById('bar-money').style.width = `${Math.min(variables["money"], 100)}%`;
+
+        document.getElementById('val-money').textContent = `$${variables["money"]}`;
+    }
 
     logoutBtn.addEventListener('click', () => {
         localStorage.removeItem('neo_user');
