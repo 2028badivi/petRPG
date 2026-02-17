@@ -34,9 +34,10 @@
 
 ## Stations
 
-* Home: this is where you play with pet, Wash pet. Contains logic editor for automation.
+* Home: this is where you play with pet, Wash pet. Contains logic editor for automation (repeat blocks, if-statement blocks).
 * Grocery Store: Buy food ($1/ea), Feed pet. Contains logic editor.
 * Vet: Heal pet ($10), Daily check-up ($2). Contains logic editor.
+* Work: Work for a set amount of hours (0-24). Every hour you work, care variables go down more. Contains logic editor.
 
 ---
 
@@ -46,6 +47,7 @@
 * Execute All Button (Blue): Runs all logic across all stations at once.
 * Stats: Health, Hunger, Happiness, Hygiene, Money, User Level, Current food, Lives.
 * Automation: Use the Blockly editor in each station to create "Schedules".
+* Analytical Report: After every day simulation, a report shows how all your global variables changed and updated as consequences of your actions.
 
 ---
 
