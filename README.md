@@ -25,6 +25,10 @@ petRPG
   - Stats: Health, Hunger, Happiness, Hygiene, Money, User Level.
   - Automation: Use the Blockly editor in each station to create "Schedules".
 - Credits:
-    -Piskel art use for ALL pixel art
+    -Piskel art used for ALL pixel art https://www.piskelapp.com/
     -Blockly.js library for the logic editor
+    -Source code for all blocks created using Google Blockly Developer Tools
+    -Groq API for AI Interative Q&A feature
+    -Visual Studio Code
+    -Github (this app!)
   
