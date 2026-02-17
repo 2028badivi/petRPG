@@ -92,3 +92,6 @@
 * HTML Template: https://gist.github.com/MrChuffmanSnippets/2043416
 * Pixel Art to CSS: https://pixelartcss.com/
       -used for the human pixel art and other art to embed as box shadow for css
+Used CSS button generator and other tools from bestcssbuttongenerator.com to render buttons and overlays:
+
+ https://www.bestcssbuttongenerator.com/
