@@ -25,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
         lives: 2
     };
 
+    window.moneySpent = 0;
+
     let scheduledActions = {
         'Vet': { summary: 'None', xml: null },
         'Grocery Store': { summary: 'None', xml: null },
@@ -278,6 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
         healPet: () => {
             if (window.gameStats.money >= 10) {
                 window.gameStats.money -= 10;
+                window.moneySpent += 10;
                 // Math.min ensures the value doesnt go over 100
                 window.gameStats.health = Math.min(100, window.gameStats.health + 20);
                 console.log("Healed! Health:", window.gameStats.health);
@@ -289,6 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dailyCheckup: () => {
             if (window.gameStats.money >= 2) {
                 window.gameStats.money -= 2;
+                window.moneySpent += 2;
                 window.gameStats.health = Math.min(100, window.gameStats.health + 5);
                 console.log("Checkup! Health:", window.gameStats.health);
             } else {
@@ -330,13 +334,17 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("Sleeping...");
         },
         // we added this so that hygiene goes up
-        washPet: () => { console.log("Washing..."); },
+        washPet: () => { 
+            window.gameStats.hygiene += 15;
+            window.gameStats.hygiene = Math.min(100, window.gameStats.hygiene);
+            console.log("Washing..."); },
 
         // we added this so that you can get more food
         buyFood: (amount) => {
             if (window.gameStats.money >= amount) {
                 window.gameStats.money -= amount;
                 window.gameStats.currentFood += amount;
+                window.moneySpent += amount;
             } else {
                 console.log(`You do not have the required $${amount}!`);
             }
@@ -617,6 +625,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('view-summary-btn').onclick = () => {
             const summaryContent = document.getElementById('summary-content');
             const stats = window.gameStats;
+            const moneySpent = window.moneySpent;
 
             summaryContent.innerHTML = `
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
@@ -627,6 +636,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div><strong>Energy:</strong> ${Math.max(0, stats.energy)}</div>
                     <div><strong>Money:</strong> $${stats.money}</div>
                     <div><strong>Level:</strong> ${stats.userLvl}</div>
+                    <div><strong>Total Money Spent:</strong> $${moneySpent}</div>
                 </div>
             `;
 
