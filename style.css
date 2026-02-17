@@ -296,23 +296,6 @@ input[type="text"]:focus {
     flex-direction: column;
 }
 
-/* we added this to the drag handle so that you can move the menu */
-.sidebar-drag-handle {
-    width: 100%;
-    height: 12px;
-    background: #334155;
-    cursor: grab;
-    position: absolute;
-    top: 0;
-    left: 0;
-    border-radius: 12px 12px 0 0;
-}
-
-/* we added this to the header so that there is a title */
-.sidebar-header {
-    margin-top: 5px;
-}
-
 /* we added this to the h3 in the header so that the text is colored */
 .sidebar-header h3 {
     font-size: 1rem;
