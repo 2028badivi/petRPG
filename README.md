@@ -95,3 +95,13 @@
 Used CSS button generator and other tools from bestcssbuttongenerator.com to render buttons and overlays:
 
  https://www.bestcssbuttongenerator.com/
+
+ Official javascript documentation:
+ https://developer.mozilla.org/en-US/docs/Web/JavaScript
+
+ Official HTML documentation:
+ https://developer.mozilla.org/en-US/docs/Web/HTML
+
+ Official CSS documentation:
+ https://developer.mozilla.org/en-US/docs/Web/CSS
+ 
