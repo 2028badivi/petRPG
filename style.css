@@ -166,7 +166,7 @@ input[type="text"]:focus {
         8px 44px #111, 20px 44px #111;
 }
 
-/* Pets and Trees remain same logic */
+/* Pets and Trees */
 .pet {
     position: absolute;
     width: 50px;
@@ -178,6 +178,41 @@ input[type="text"]:focus {
     background-size: contain;
     image-rendering: pixelated;
 }
+
+.pet.cat {
+    box-shadow: none;
+    width: 50px;
+    height: 50px;
+    background-image: url("pets/cat_normal.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    image-rendering: pixelated;
+}
+
+.pet.dog {
+    box-shadow: none;
+    width: 50px;
+    height: 50px;
+    background-image: url("pets/dog_normal.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    image-rendering: pixelated;
+}
+
+.pet.rabbit {
+    box-shadow: none;
+    width: 50px;
+    height: 50px;
+    background-image: url("pets/rabbit_normal.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    image-rendering: pixelated;
+}
+
+
 
 .tree {
     position: absolute;
@@ -305,10 +340,10 @@ input[type="text"]:focus {
 .mini-money {
     background: #064e3b;
     color: #4ade80;
-    padding: 4px 12px;
+    padding: 18px 12px;
     border-radius: 20px;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 1rem;
 }
 
 .sidebar-content {
@@ -575,6 +610,57 @@ input[type="text"]:focus {
 .stat-down {
     color: var(--danger);
     font-weight: 600;
+}
+
+.faq-panel {
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.faq-panel h3 {
+    color: var(--accent-secondary);
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.faq-item {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #0f172a;
+    border-radius: 8px;
+    border-left: 4px solid var(--accent-secondary);
+}
+
+.faq-q {
+    display: block;
+    font-weight: 700;
+    color: var(--accent-secondary);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.faq-a {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+}
+
+#logout-btn{
+    background-color: hsl(0, 92%, 65%);
+    color: white;
+    border: 4px solid hsl(0, 92%, 55%);
+    border-radius: 5px;
+    font-size: 1.1em;
+}
+#display-name{
+    font-size: 1.3em;
+    font-weight: bold;
+}
+.userbadge{
+    font-family:'Courier New', Courier, monospace
 }
 
 @keyframes fadeIn {
