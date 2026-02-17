@@ -30,7 +30,7 @@
   * lives,
   * and level.
  * Gameplay is infinite. However, as you level up, the game gets harder, as incrementing variables costs more money and variables decrease faster. The game ends when you lose 2 "hearts."
- * You lose a heart when your cash or any pet care variable goes to 0 or below  after executing your schedule/day. However, after you lose your first heart, you gain a "loan" of $50 to recover your care and character variables.
+ * You lose a heart when your cash or any pet care variable goes to 0 or below  after executing your schedule/day.
  * This game is all about logical planning and scheduling a day for the future. A running total of all your expenses is in the "status section".
 
 * To increase these variables, a user has to use block logic to plan their day, which teaches the user how to logically think along with planning for the future.
