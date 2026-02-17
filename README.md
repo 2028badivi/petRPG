@@ -61,7 +61,7 @@
 * Execute All Button (Blue): Runs all logic across all stations at once.
 * Stats: Health, Hunger, Happiness, Hygiene, Money, User Level, Current food, Lives.
 * Automation: Use the Blockly editor in each station to create "Schedules".
-* Analytical Report: After every day simulation, a report shows how all your global variables changed and updated as consequences of your actions.
+* Analytical Report: After every day simulation, a report shows how all your global variables changed as consequences of your actions.
 
 ---
 # How to run the game:
@@ -69,12 +69,21 @@
 * From there, you will be prompted to make an account with a name, a pet name, and a certain pet (dog, cat, or rabbit).
 * After these steps, you are all set! Make sure you read the Q&A and use the AI chatbot using the Groq API if you have any extra questions on how to play.
 
+---
+# Built with
+* HTML
+* CSS
+* JavaScript
+* Blockly.js
+* Groq API (for the AI interactive chatbot)
+---
+
 ## Credits
 
 * Piskel art used for ALL pixel art [https://www.piskelapp.com/](https://www.piskelapp.com/)
 * Blockly.js library for the logic editor
 * Source code for all blocks created using Google Blockly Developer Tool
-* Groq API for AI Interative Q&A feature
+* Groq API for AI Interactive Q&A feature
 * Visual Studio Code
 * Github (this app!)
 
