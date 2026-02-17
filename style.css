@@ -1,13 +1,13 @@
 /* These are the colors we use everywhere */
 :root {
     --bg-color: #0f172a;
-    --accent-primary: #7c3aed;
-    --accent-secondary: #0ea5e9;
+    --accent-primary: #62c955;
+    --accent-secondary: #ffffff;
     --text-main: #ffffff;
     --text-dim: #94a3b8;
     --panel-bg: #1e293b;
-    --border-color: #334155;
-    --success: #22c55e;
+    --border-color: #919191;
+    --success: #86ffb2;
     --danger: #ef4444;
 }
 
@@ -648,19 +648,21 @@ input[type="text"]:focus {
     line-height: 1.5;
 }
 
-#logout-btn{
+#logout-btn {
     background-color: hsl(0, 92%, 65%);
     color: white;
     border: 4px solid hsl(0, 92%, 55%);
     border-radius: 5px;
     font-size: 1.1em;
 }
-#display-name{
+
+#display-name {
     font-size: 1.3em;
     font-weight: bold;
 }
-.userbadge{
-    font-family:'Courier New', Courier, monospace
+
+.userbadge {
+    font-family: 'Courier New', Courier, monospace
 }
 
 @keyframes fadeIn {
