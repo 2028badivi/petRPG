@@ -109,4 +109,6 @@ Used CSS button generator and other tools from bestcssbuttongenerator.com to ren
 
  Used for markdown parsing for AI output:
  https://markdown-tools.com/markdown-ai-agents
- 
+
+ XML parsing guide
+ https://developer.mozilla.org/en-US/docs/Web/XML/Guides/Parsing_and_serializing_XML
