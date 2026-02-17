@@ -35,6 +35,7 @@
 
 * To increase these variables, a user has to use block logic to plan their day, which teaches the user how to logically think along with planning for the future.
 * Each simulation (i.e. each time you click "Execute All") is one full level.
+* Every 2 levels, a random event occurs. These events could include the day being a rainy day, which may decrease some care variables. Some might even help you. Saving money and planning accordingly for these events are crucial to leveling!
 
 ---
 
