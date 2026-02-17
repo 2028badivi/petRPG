@@ -1,24 +1,43 @@
+// This code runs as soon as the page loads
 document.addEventListener('DOMContentLoaded', () => {
     let currentUser = null;
     let currentStep = 1;
+    let currentPetType = 'cat';
+
+    const PET_MODIFIERS = {
+        'dog': { health: 0.7 },
+        'rabbit': { energy: 0.7 },
+        'cat': { happiness: 0.7 }
+    };
 
 
+    // This keeps track of your pet's stats like health and hunger
     window.gameStats = window.gameStats || {
-        health: 75,
+        health: 90,
         hunger: 80,
-        happiness: 67,
+        happiness: 50,
         hygiene: 85,
         money: 50,
         currentFood: 23,
-        userLvl: 15
+        userLvl: 1,
+        energy: 50,
+        lives: 2
     };
 
     let scheduledActions = {
         'Vet': { summary: 'None', xml: null },
         'Grocery Store': { summary: 'None', xml: null },
-        'Home': { summary: 'None', xml: null }
+        'Home': { summary: 'None', xml: null },
+        'Work': { summary: 'None', xml: null }
     };
 
+    function saveGameState() {
+        if (currentUser) {
+            localStorage.setItem(`user_variables_${currentUser}`, JSON.stringify(window.gameStats));
+        }
+    }
+
+    // This lets the game know where the player is
     const character = document.getElementById('character');
 
     const screens = {
@@ -26,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         onboarding: document.getElementById('onboarding-screen'),
         game: document.getElementById('game-screen')
     };
+
 
     const usernameInput = document.getElementById('username-input');
     const loginBtn = document.getElementById('login-btn');
@@ -47,12 +67,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const stationData = [
         { name: 'Home', x: 20, y: 30 },
         { name: 'Grocery Store', x: 70, y: 20 },
-        { name: 'Vet', x: 50, y: 80 }
+        { name: 'Vet', x: 50, y: 80 },
+        { name: 'Work', x: 20, y: 75 },
+        { name: 'AI Guide', x: 80, y: 70 }
     ];
     const stepSize = 4;
     let isModalOpen = false;
+    // This is where the Blockly logic editor lives
     let workspace = null;
 
+    // ============
+    // (BLOCKLY SECTION) custom blocks used for the Blockly.js interface at stations (vet, home, grocery store). Blocks created with Google Blockly Developer Tools
+    // ============
     function defineCustomBlocks() {
         if (typeof Blockly === 'undefined') return;
 
@@ -94,7 +120,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.setHelpUrl("");
             }
         };
-
+        Blockly.Blocks['sleep'] = {
+            init: function () {
+                this.appendDummyInput()
+                    .appendField("sleep (+50 energy)");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(0);
+                this.setTooltip("");
+                this.setHelpUrl("");
+            }
+        };
         Blockly.Blocks['daily_checkup'] = {
             init: function () {
                 this.appendDummyInput()
@@ -108,6 +144,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.setTooltip("Check-up increases health by 5. Costs $2.");
                 this.setHelpUrl("");
             }
+        };
+
+        Blockly.Blocks['work'] = {
+            init: function () {
+                this.appendDummyInput()
+                    .appendField("work for ")
+                    .appendField(new Blockly.FieldNumber(1, 1, 24), "hours")
+                    .appendField("hours ($15/hr)");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(160);
+                this.setTooltip("Work to earn money. Costs energy, hunger, and happiness.");
+                this.setHelpUrl("");
+            },
+            maxInstances: 1
         };
 
         Blockly.Blocks['play_pet'] = {
@@ -128,7 +179,27 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
+        Blockly.Blocks['get_pet_stat'] = {
+            init: function () {
+                this.appendDummyInput()
+                    .appendField("pet's ")
+                    .appendField(new Blockly.FieldDropdown([
+                        ["Health", "health"],
+                        ["Money", "money"],
+                        ["Energy", "energy"],
+                        ["Hunger", "hunger"],
+                        ["Happiness", "happiness"],
+                        ["Hygiene", "hygiene"],
+                        ["Level", "userLvl"]
+                    ]), "STAT");
+                this.setOutput(true, "Number");
+                this.setColour(260);
+                this.setTooltip("Returns the current value of the selected pet stat.");
+                this.setHelpUrl("");
+            }
+        };
 
+        //functions that connect with Blockly blocks, allows game to be played
         const generator = (typeof Blockly !== 'undefined' && Blockly.JavaScript) || (window.javascript && window.javascript.javascriptGenerator);
 
         if (generator) {
@@ -156,14 +227,39 @@ document.addEventListener('DOMContentLoaded', () => {
             func['buy_food'] = function (block) {
                 const amount = Number(block.getFieldValue("food"));
                 return `window.gameActions.buyFood(${amount});\n`;
-            }
+            };
+            func['sleep'] = function (block) {
+                return `window.gameActions.sleepPet();\n`
+            };
+            func['work'] = function (block) {
+                const hours = Number(block.getFieldValue("hours"));
+                return `window.gameActions.workJob(${hours});\n`;
+            };
+
+            func['get_pet_stat'] = function (block) {
+                const stat = block.getFieldValue('STAT');
+                const code = `window.gameStats.${stat}`;
+                return [code, generator.ORDER_ATOMIC];
+            };
         } else {
             console.error("Blockly Generator (JavaScript) not found!");
         }
     }
 
-
+    // functions that are connected to the blocks, changes global stats of pets
     window.gameActions = {
+        checkLifeLoss: () => {
+            const vitals = ['health', 'happiness', 'hunger', 'hygiene', 'energy'];
+            const hitZero = vitals.some(v => window.gameStats[v] <= 0);
+            if (hitZero) {
+                window.gameStats.lives = (window.gameStats.lives || 1) - 1;
+                document.getElementById("livesHeader").textContent = `Lives: ${window.gameStats.lives}`;
+                console.log("Life lost! Hitting 0 on a vital stat.");
+                if (window.gameStats.lives <= 0) {
+                    showGameOver();
+                }
+            }
+        },
         healPet: () => {
             if (window.gameStats.money >= 10) {
                 window.gameStats.money -= 10;
@@ -184,6 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         feedPet: (times) => {
             if (window.gameStats.currentFood >= times) {
+                // this formula makes variable increment less as level goes up, which means higher lvl --> overall harder gameplay
                 window.gameStats.hunger += Math.round((times * 2.5) / (1 + (window.gameStats.userLvl * 0.025))) / 10;
                 window.gameStats.hunger = Math.min(100, window.gameStats.hunger);
                 window.gameStats.currentFood -= times;
@@ -196,24 +293,67 @@ document.addEventListener('DOMContentLoaded', () => {
 
         },
         playPet: () => {
-            window.gameStats.happiness += (5) / (1 + (window.gameStats.userLvl * 0.025));
-            console.log("Playing...");
+            const cost = 10;
+            if (window.gameStats.energy >= cost) {
+                window.gameStats.happiness += (5) / (1 + (window.gameStats.userLvl * 0.025));
+                window.gameStats.happiness = Math.min(100, window.gameStats.happiness);
+                window.gameStats.energy -= cost;
+                console.log("Playing...");
+                if (window.gameStats.energy <= 0) window.gameActions.checkLifeLoss();
+            } else {
+                console.log("Too tired to play! Need 10 energy.");
+            }
+        },
+        sleepPet: () => {
+            window.gameStats.energy += 50;
+            window.gameStats.energy = Math.min(100, window.gameStats.energy);
+            console.log("Sleeping...");
         },
         washPet: () => { console.log("Washing..."); },
-        
+
         buyFood: (amount) => {
             if (window.gameStats.money >= amount) {
                 window.gameStats.money -= amount;
                 window.gameStats.currentFood += amount;
-            }else{
+            } else {
                 console.log(`You do not have the required $${amount}!`);
             }
-            
+
+        },
+        workJob: (hours) => {
+            const wage = 15;
+            const mod = PET_MODIFIERS[currentPetType] || {};
+            const energyCost = (hours * 4) * (mod.energy || 1);
+            const hungerCost = (hours * 3) * (mod.hunger || 1);
+            const happinessCost = (hours * 2) * (mod.happiness || 1);
+
+            if (window.gameStats.energy >= energyCost &&
+                window.gameStats.hunger >= hungerCost &&
+                window.gameStats.happiness >= happinessCost) {
+
+                window.gameStats.money += hours * wage;
+                window.gameStats.energy -= energyCost;
+                window.gameStats.hunger -= hungerCost;
+                window.gameStats.happiness -= happinessCost;
+
+                console.log(`Worked for ${hours} hours. Earned $${hours * wage}.`);
+
+                if (window.gameStats.energy <= 0 || window.gameStats.hunger <= 0 || window.gameStats.happiness <= 0) {
+                    window.gameActions.checkLifeLoss();
+                }
+            } else {
+                console.log("Insufficient stats to work that long! The pet needs more energy, happiness, or food.");
+            }
         },
     };
+    // ==========
+    // end of BLOCKLY.JS section
+    // ===========
+
+
 
     checkSession();
-
+    // stores user account in LocalStorage
     function checkSession() {
         const storedUser = localStorage.getItem('neo_user');
         if (storedUser) {
@@ -244,6 +384,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function startGame() {
         displayName.textContent = currentUser;
 
+        // Ensure blocks are defined so headless execution works immediately
+        defineCustomBlocks();
+
         const storedVars = localStorage.getItem(`user_variables_${currentUser}`);
         if (storedVars) {
             Object.assign(window.gameStats, JSON.parse(storedVars));
@@ -251,8 +394,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         const userData = JSON.parse(localStorage.getItem(`user_data_${currentUser}`));
-        const petType = userData?.q2 || 'cat';
-        pet.className = `pet ${petType}`;
+        currentPetType = userData?.q2 || 'cat';
+        pet.className = `pet ${currentPetType}`;
 
         generateTrees();
         generateStations();
@@ -266,6 +409,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (savedActions) {
             scheduledActions = JSON.parse(savedActions);
         }
+
+        document.getElementById("levelHeader").textContent = `Level: ${window.gameStats.userLvl || 1}`;
+        document.getElementById("livesHeader").textContent = `Lives: ${window.gameStats.lives ?? 2}`;
         updateSidebarUI();
     }
 
@@ -304,7 +450,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ['health', 'happiness', 'hunger', 'hygiene'].forEach(id => {
             const el = document.getElementById(`mini-${id}`);
             if (el) {
-                const val = stats[id] || 0;
+                const val = Math.trunc(stats[id] || 0);
                 const color = colors[id] || 'var(--accent-primary)';
                 el.style.background = `conic-gradient(${color} ${val}%, transparent ${val}%)`;
             }
@@ -312,7 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const miniMoney = document.getElementById('mini-val-money');
         if (miniMoney) {
-            miniMoney.textContent = `$${stats.money || 0}`;
+            miniMoney.textContent = `$${Math.trunc(stats.money || 0)}`;
         }
     }
 
@@ -321,6 +467,33 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Logic engine not ready.");
             return;
         }
+
+        // --- BLOCK COUNT VALIDATION (Action Blocks Only) ---
+        let actionBlockCount = 0;
+        const actionTypes = ['feed_pet', 'heal_pet', 'buy_food', 'sleep', 'daily_checkup', 'play_pet', 'wash_pet', 'work'];
+        const countingWorkspace = new Blockly.Workspace();
+
+        for (const station of Object.keys(scheduledActions)) {
+            const data = scheduledActions[station];
+            if (data && data.xml && data.xml !== 'None') {
+                try {
+                    countingWorkspace.clear();
+                    const dom = Blockly.utils.xml.textToDom(data.xml);
+                    Blockly.Xml.domToWorkspace(dom, countingWorkspace);
+                    const blocks = countingWorkspace.getAllBlocks(false);
+                    actionBlockCount += blocks.filter(b => actionTypes.includes(b.type)).length;
+                } catch (e) {
+                    console.error(`Error counting blocks for ${station}:`, e);
+                }
+            }
+        }
+        countingWorkspace.dispose();
+
+        if (actionBlockCount > 10) {
+            alert("10 action blocks per day is a maximum. Logic and stat blocks don't count towards this limit!");
+            return;
+        }
+        // ----------------------------------------------------
 
         console.log("Global Execution Started...");
         const btn = document.getElementById('execute-all-btn');
@@ -342,6 +515,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     Blockly.Xml.domToWorkspace(dom, headlessWorkspace);
                     const code = Blockly.JavaScript.workspaceToCode(headlessWorkspace);
                     fullCode += `// ${station}\n${code}\n`;
+                    console.log("User Level:" + window.gameStats.userLvl);
                 } catch (e) {
                     console.error(`Error generating code for ${station}:`, e);
                 }
@@ -355,9 +529,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 eval(fullCode);
 
+                // Increment level by exactly 1 after daily actions
+                window.gameStats.userLvl = (window.gameStats.userLvl || 1) + 1;
+                document.getElementById("levelHeader").textContent = `Level: ${window.gameStats.userLvl}`;
+
+                // --- DAILY DECAY ---
+                statsDecrement();
+                // ------------------
+
+                // --- RANDOM EVENTS (Every 2nd day) ---
+                if (window.gameStats.userLvl % 2 === 0) {
+                    triggerRandomEvent();
+                }
+                // -------------------------------------
+
+                // --- FINAL LIVES LOGIC ---
+                window.gameActions.checkLifeLoss();
+                // -------------------
 
                 syncUIWithVariables();
-                localStorage.setItem(`user_variables_${currentUser}`, JSON.stringify(window.gameStats));
+                saveGameState();
 
                 btn.textContent = 'Success! ✨';
                 btn.style.background = '#2ecc71';
@@ -375,6 +566,72 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.style.background = '';
         }, 2000);
     }
+
+    function showGameOver() {
+        const gameOverOverlay = document.getElementById('game-over-overlay');
+        gameOverOverlay.style.display = 'flex';
+
+        document.getElementById('restart-game-btn').onclick = () => {
+            // Remove ONLY this player's specific data
+            localStorage.removeItem(`user_variables_${currentUser}`);
+            localStorage.removeItem(`user_scheduled_actions_${currentUser}`);
+            localStorage.removeItem(`user_data_${currentUser}`);
+            // Also unset the current session
+            localStorage.removeItem('neo_user');
+
+            // Reload to go back to login screen
+            location.reload();
+        };
+
+        document.getElementById('view-summary-btn').onclick = () => {
+            document.getElementById('summary-overlay').style.display = 'flex';
+        };
+
+        document.getElementById('close-summary').onclick = () => {
+            document.getElementById('summary-overlay').style.display = 'none';
+        };
+    }
+
+    const randomEventsList = [
+        { title: "Sunny Day!", desc: "The weather is beautiful! Your pet had a blast running around in the garden.", stats: { happiness: 15, energy: 10 } },
+        { title: "Unexpected Nap", desc: "Your pet found a cozy place to nap and slept all afternoon.", stats: { energy: 25, happiness: 5 } },
+        { title: "Minor Cold", desc: "Oh no! Your pet caught a slight chill from an open window.", stats: { health: -10, happiness: -5 } },
+        { title: "Tummy Ache", desc: "Your pet ate something they shouldn't have in the yard.", stats: { health: -15, hunger: -10 } },
+        { title: "New Toy!", desc: "You found an old squeaky toy under the rug!", stats: { happiness: 20 } },
+        { title: "Rainy Day Blues", desc: "It's been raining all day. Your pet is feeling a bit bored and sluggish.", stats: { happiness: -10, energy: -10 } },
+        { title: "High Energy!", desc: "Your pet is feeling extra bouncy today!", stats: { energy: 20 } },
+        { title: "Extra Hungry", desc: "For some reason, your pet is much hungrier than usual today.", stats: { hunger: -20 } }
+    ];
+
+    function triggerRandomEvent() {
+        const event = randomEventsList[Math.floor(Math.random() * randomEventsList.length)];
+        const overlay = document.getElementById('event-overlay');
+        const titleEl = document.getElementById('event-title');
+        const descEl = document.getElementById('event-description');
+        const changesEl = document.getElementById('event-stat-changes');
+
+        titleEl.textContent = event.title;
+        descEl.textContent = event.desc;
+
+        let changesHtml = '';
+        for (const [stat, change] of Object.entries(event.stats)) {
+            const isPos = change > 0;
+            const sign = isPos ? '+' : '';
+            const className = isPos ? 'stat-up' : 'stat-down';
+            changesHtml += `<div class="${className}">${stat.toUpperCase()}: ${sign}${change}</div>`;
+
+            // Apply the change
+            window.gameStats[stat] = Math.min(100, Math.max(0, (window.gameStats[stat] || 0) + change));
+        }
+        changesEl.innerHTML = changesHtml;
+
+        overlay.style.display = 'flex';
+        syncUIWithVariables();
+    }
+
+    document.getElementById('close-event-btn').onclick = () => {
+        document.getElementById('event-overlay').style.display = 'none';
+    };
 
 
     function summarizeWorkspace(ws) {
@@ -411,6 +668,11 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (type === 'buy_food') {
             const times = block.getFieldValue('food');
             text = `Buy ${times} food`;
+        } else if (type === 'sleep') {
+            text = 'Sleep';
+        } else if (type === 'work') {
+            const hours = block.getFieldValue('hours');
+            text = `Work ${hours} hours ($15/hr)`;
         } else {
             text = 'Custom action';
         }
@@ -428,7 +690,7 @@ document.addEventListener('DOMContentLoaded', () => {
         stationsContainer.innerHTML = '';
         stations = stationData.map(s => {
             const div = document.createElement('div');
-            div.className = 'station';
+            div.className = `station ${s.name.toLowerCase().replace(/\s+/g, '-')}`;
             div.style.left = `${s.x}%`;
             div.style.top = `${s.y}%`;
             div.innerHTML = `<span class="station-label">${s.name}</span>`;
@@ -437,7 +699,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-
+    // ======
+    // world generation + character positions
+    // ======
     function generateTrees() {
         obstaclesContainer.innerHTML = '';
         trees = [];
@@ -499,19 +763,34 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    // =======
+    // end of world generation + character input and positions
+    // =======
 
+
+    // =========
+    // stations and blockly.js UI implementations
+    // =========
     function openModal(title) {
         modalTitle.textContent = title;
         const stationInterface = document.getElementById('station-interface');
+        const aiInterface = document.getElementById('ai-interface');
         const genericContent = document.getElementById('generic-content');
         const modalPetSprite = document.getElementById('modal-pet-sprite');
         const stationSubtitle = document.getElementById('station-subtitle');
 
-        const validStations = ['vet', 'grocery store', 'home'];
+        const validStations = ['vet', 'grocery store', 'home', 'work'];
         const isKnownStation = validStations.includes(title.toLowerCase());
 
-        if (isKnownStation) {
+        const isAIStation = title.toLowerCase() === 'ai guide';
+
+        if (isAIStation) {
+            stationInterface.style.display = 'none';
+            aiInterface.style.display = 'flex';
+            genericContent.style.display = 'none';
+        } else if (isKnownStation) {
             stationInterface.style.display = 'flex';
+            aiInterface.style.display = 'none';
             genericContent.style.display = 'none';
             stationSubtitle.textContent = `${title} Logic Editor`;
 
@@ -551,7 +830,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 workspace.clear();
 
-         
+
                 const stationKey = Object.keys(scheduledActions).find(k => k.toLowerCase() === title.toLowerCase()) || title;
                 const savedData = scheduledActions[stationKey];
 
@@ -588,6 +867,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 <block type="logic_operation"></block>
             </category>`;
 
+        const variableCategory = `
+            <category name="Stats" colour="260">
+                <block type="get_pet_stat"></block>
+                <block type="math_number"></block>
+            </category>`;
+
         let actionBlocks = '';
         if (station === 'vet') {
             actionBlocks = `
@@ -598,7 +883,10 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (station === 'home') {
             actionBlocks = `
                 <block type="play_pet"></block>
-                <block type="wash_pet"></block>`;
+                <block type="wash_pet"></block>
+                <block type = "sleep"></block>`;
+        } else if (station === 'work') {
+            actionBlocks = `<block type="work"></block>`;
         }
 
         toolboxXml = `<xml>
@@ -606,6 +894,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${actionBlocks}
             </category>
             ${logicCategory}
+            ${variableCategory}
         </xml>`;
 
         workspace.updateToolbox(toolboxXml);
@@ -626,18 +915,21 @@ document.addEventListener('DOMContentLoaded', () => {
         updateStat('health', stats.health || 0);
         updateStat('hygiene', stats.hygiene || 0);
         updateStat('hunger', stats.hunger || 0);
+        updateStat('energy', stats.energy || 0);
 
         const valMoney = document.getElementById('val-money');
         if (valMoney) {
-            valMoney.textContent = `$${stats.money || 0}`;
+            valMoney.textContent = `$${Math.trunc(stats.money || 0)}`;
         }
 
         updateMiniStatsUI();
+        changeExpression();
     }
 
     function updateStat(id, val) {
-        document.getElementById(`bar-${id}`).style.width = `${val}%`;
-        document.getElementById(`val-${id}`).textContent = `${val} / 100`;
+        const truncatedVal = Math.trunc(val);
+        document.getElementById(`bar-${id}`).style.width = `${truncatedVal}%`;
+        document.getElementById(`val-${id}`).textContent = `${truncatedVal} / 100`;
     }
 
     function closeModal() {
@@ -652,37 +944,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    document.getElementById('execute-btn').addEventListener('click', () => {
-        if (workspace && typeof Blockly !== 'undefined') {
-            const code = Blockly.JavaScript.workspaceToCode(workspace);
-            console.log("Executing generated logic:\n", code);
-            try {
-                eval(code);
-                syncUIWithVariables();
-                localStorage.setItem(`user_variables_${currentUser}`, JSON.stringify(window.gameStats));
-                console.log("Execution successful. New stats:", window.gameStats);
 
-                const stationName = modalTitle.textContent;
-                scheduledActions[stationName] = summarizeWorkspace(workspace);
-                localStorage.setItem(`user_scheduled_actions_${currentUser}`, JSON.stringify(scheduledActions));
-                updateSidebarUI();
 
-                const btn = document.getElementById('execute-btn');
-                const originalText = btn.textContent;
-                btn.textContent = 'Logic Executed! ✨';
-                btn.classList.add('success-btn');
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                    btn.classList.remove('success-btn');
-                }, 1500);
-            } catch (e) {
-                console.error("Execution error:", e);
-                alert("Error in logic execution! Check console.");
-            }
-        } else {
-            alert('Logic editor not ready.');
-        }
-    });
+
     function handleMovement(key) {
         let nx = characterPos.x;
         let ny = characterPos.y;
@@ -708,6 +972,9 @@ document.addEventListener('DOMContentLoaded', () => {
             updateCharacterPosition();
         }
     }
+    // =========
+    // end of stations and blockly.js UI implementations
+    // =========
 
 
     loginBtn.addEventListener('click', () => {
@@ -750,7 +1017,7 @@ document.addEventListener('DOMContentLoaded', () => {
     finishOnboardingBtn.addEventListener('click', () => {
         const responses = {
             q1: document.getElementById('q1').value,
-            q2: document.getElementById('q2').value,
+            q2: document.querySelector('input[name="pet-choice"]:checked')?.value || 'cat',
             timestamp: new Date().toISOString()
         };
 
@@ -771,4 +1038,190 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     document.getElementById('execute-all-btn').addEventListener('click', executeAllActions);
+
+    const aiChatInput = document.getElementById('ai-chat-input');
+    const aiSendBtn = document.getElementById('ai-send-btn');
+    const chatMessages = document.getElementById('chat-messages');
+
+    const GROQ_API_KEY = "ENTER_KEY_HERE";
+    const SYSTEM_PROMPT = `You are the PetRPG Guide. You help users understand how to play the game.
+Game Context included below:
+- This is petRPG, a game for TJFBLA Intro to Programming 2026 where users move around a grid and enter stations to make scheduling commands to take care of the pet.
+- Move with WASD or Arrow keys. Interact with stations using Space.
+- Stations:
+  - Home: this iss where you play with pet, Wash pet. Contains logic editor for automation.
+  - Grocery Store: Buy food ($1/ea), Feed pet. Contains logic editor.
+  - Vet: Heal pet ($10), Daily check-up ($2). Contains logic editor.
+  - AI Guide: That's you!
+- Features:
+  - Sidebar: Shows "Scheduled Actions" summarize by Blockly logic.
+  - Execute All Button (Blue): Runs all logic across all stations at once.
+  - Stats: Health, Hunger, Happiness, Hygiene, Money, User Level.
+  - Automation: Use the Blockly editor in each station to create "Schedules".
+- Credits:
+    Piskel art use for ALL pixel art
+Goal: Be helpful, concise, and stay in character/priofessional!. Assistant name: RPG AI.`;
+
+
+    let chatHistory = [];
+
+    async function sendToAI() {
+        const userText = aiChatInput.value.trim();
+        if (!userText) return;
+
+
+        addMessage(userText, 'user');
+        chatHistory.push({ role: "user", content: userText });
+        aiChatInput.value = '';
+
+
+        const loadingMsg = addMessage('', 'assistant');
+        loadingMsg.classList.add('typing');
+
+        try {
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${GROQ_API_KEY}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    messages: [
+                        { role: "system", content: SYSTEM_PROMPT },
+                        ...chatHistory
+                    ],
+                    model: "openai/gpt-oss-20b",
+                    temperature: 0.7,
+                    max_tokens: 1024,
+                    stream: true
+                })
+            });
+
+            if (!response.ok) throw new Error("API request failed");
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder("utf-8");
+            let aiResponse = "";
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value, { stream: true });
+                const lines = chunk.split("\n");
+
+                for (const line of lines) {
+                    const trimmedLine = line.trim();
+                    if (!trimmedLine || !trimmedLine.startsWith("data: ")) continue;
+
+                    const dataStr = trimmedLine.slice(6);
+                    if (dataStr === "[DONE]") break;
+
+                    try {
+                        const data = JSON.parse(dataStr);
+                        const content = data.choices[0]?.delta?.content || "";
+                        aiResponse += content;
+
+                        loadingMsg.innerHTML = typeof marked !== 'undefined' ? marked.parse(aiResponse) : aiResponse;
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    } catch (e) {
+                        //we're gonna skip parsing errors for incomplete chunks    
+                    }
+                }
+            }
+
+            loadingMsg.classList.remove('typing');
+            chatHistory.push({ role: "assistant", content: aiResponse });
+        } catch (error) {
+            console.error("AI Error:", error);
+            loadingMsg.textContent = "Oops! Something went wrong.";
+            loadingMsg.classList.remove('typing');
+        }
+    }
+
+    function addMessage(text, role) { // allows user to input message into AI interface for the intelligent Q&A section
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${role}`;
+        if (role === 'assistant' && typeof marked !== 'undefined' && text !== '...') {
+            msgDiv.innerHTML = marked.parse(text);
+        } else {
+            msgDiv.textContent = text;
+        }
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        return msgDiv;
+    }
+
+    aiSendBtn.addEventListener('click', sendToAI);
+    aiChatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendToAI();
+    });
+
+
+    // these functions are used after executing all code blocks
+
+    /* Sprite Priority Order
+        1. Sick (based on health)
+        2. Tired (based on energy)
+        3. Sad (based on happiness)
+        4. Normal (default if all global variables are above threshold)
+    */
+    function changeExpression() { //changes expression of pet based on pet variables (hygiene, health, hunger, etc.) after every execution
+        const petType = pet.classList[1];
+        const modalPet = document.getElementById("modal-pet-sprite");
+
+        if (window.gameStats.health <= 30) {
+            pet.style.backgroundImage = `url("pets/${petType}_sick.png")`;
+            modalPet.style.backgroundImage = `url("pets/${petType}_sick.png")`;
+        } else if (window.gameStats.energy <= 25) {
+            pet.style.backgroundImage = `url("pets/${petType}_tired.png")`;
+            modalPet.style.backgroundImage = `url("pets/${petType}_tired.png")`;
+        } else if (window.gameStats.happiness <= 20) {
+            pet.style.backgroundImage = `url("pets/${petType}_sad.png")`;
+            modalPet.style.backgroundImage = `url("pets/${petType}_sad.png")`;
+        } else {
+            pet.style.backgroundImage = `url("pets/${petType}_normal.png")`;
+            modalPet.style.backgroundImage = `url("pets/${petType}_normal.png")`;
+        }
+    }
+
+    // This makes stats go down a bit every day
+    function statsDecrement() { // decrements stats every execution so game can properly end
+        const userLvl = window.gameStats.userLvl;
+        const mod = PET_MODIFIERS[currentPetType] || {};
+
+        window.gameStats.happiness = Math.max(0, window.gameStats.happiness - (10 - (0.25 * userLvl)) * (mod.happiness || 1));
+        window.gameStats.energy = Math.max(0, window.gameStats.energy - (10 - (0.25 * userLvl)) * (mod.energy || 1));
+        window.gameStats.hunger = Math.max(0, window.gameStats.hunger - (10 - (0.25 * userLvl)));
+        // health decay is random to simulate random, unpredictable illness
+        window.gameStats.health = Math.max(0, window.gameStats.health - Math.trunc((Math.random() * 15) + 10) * (mod.health || 1));
+        window.gameStats.hygiene = Math.max(0, window.gameStats.hygiene - (10 - (0.25 * userLvl)));
+    }
+
+    function initSidebarDrag() {
+        const sidebar = document.getElementById('status-sidebar');
+        const handle = document.getElementById('sidebar-drag');
+        let isDragging = false;
+        let offset = { x: 0, y: 0 };
+
+        handle.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            offset.x = e.clientX - sidebar.offsetLeft;
+            offset.y = e.clientY - sidebar.offsetTop;
+            sidebar.style.animation = 'none'; // Stop animation during drag
+            sidebar.style.transition = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            sidebar.style.left = (e.clientX - offset.x) + 'px';
+            sidebar.style.top = (e.clientY - offset.y) + 'px';
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+    }
+
+    initSidebarDrag();
 });
