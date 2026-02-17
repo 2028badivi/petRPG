@@ -106,4 +106,7 @@ Used CSS button generator and other tools from bestcssbuttongenerator.com to ren
  https://developer.mozilla.org/en-US/docs/Web/CSS
 
  Advice from public forums (debugged using advice from Stack Overflow)
+
+ Used for markdown parsing for AI output:
+ https://markdown-tools.com/markdown-ai-agents
  
