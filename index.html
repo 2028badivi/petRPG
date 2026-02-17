@@ -1,3 +1,4 @@
+<!-- This is the start of the website -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,6 +15,7 @@
     <script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
     <script src="https://unpkg.com/blockly/javascript_compressed.js"></script>
     <script src="https://unpkg.com/blockly/msg/en.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 
 <body>
@@ -21,7 +23,8 @@
 
         <section id="auth-screen" class="view active">
             <div class="glass-card fade-in">
-                <h1>PetRPG (we can change the name if u want)</h1>
+                <!-- The name of the game -->
+                <h1>PetRPG</h1>
                 <p class="subtitle">Sign in</p>
                 <div class="input-group">
                     <input type="text" id="username-input" placeholder="What's your name?" autocomplete="off">
@@ -95,13 +98,21 @@
                 <div class="world-grid"></div>
                 <div id="obstacles-container"></div>
                 <div id="stations-container"></div>
+                <!-- This is the person you control -->
                 <div id="character" class="pixel-human"></div>
-                <div id="pet" class="pet cat"></div>
+                <!-- This is your pet friend -->
+                <div id="pet" class="pet"></div>
             </div>
 
             <div id="status-sidebar" class="status-sidebar">
+                <div class="sidebar-drag-handle" id="sidebar-drag"></div>
                 <div class="sidebar-header">
                     <h3>Status & Schedule</h3>
+                    <div class="sidebar-meta">
+                        <h3 id="levelHeader">Level: 1</h3>
+                        <span class="meta-separator">|</span>
+                        <h3 id="livesHeader">Lives: 2</h3>
+                    </div>
                 </div>
                 <div class="stats-overview">
                     <div class="mini-stat" title="Health">
@@ -119,13 +130,10 @@
                     <div class="mini-money">
                         <span id="mini-val-money">$0</span>
                     </div>
-                    <div class="station-status-item">
-                        <span class="station-name">Home:</span>
-                        <span class="action-text">None</span>
-                    </div>
+
                 </div>
                 <div id="scheduled-actions-list" class="sidebar-content">
-                    
+
                 </div>
 
                 <div class="sidebar-footer">
@@ -178,6 +186,13 @@
                             <div id="val-hygiene" class="stat-val">0 / 100</div>
                         </div>
                         <div class="stat-item">
+                            <label>Energy</label>
+                            <div class="bar-bg">
+                                <div id="bar-energy" class="bar-fill"></div>
+                            </div>
+                            <div id="val-energy" class="stat-val">0 / 100</div>
+                        </div>
+                        <div class="stat-item">
                             <label>Money</label>
                             <div id="val-money" class="stat-val"
                                 style="font-size: 1.5rem; font-weight: bold; color: #2ecc71;">$0</div>
@@ -189,12 +204,108 @@
                     <div class="block-editor">
                         <div id="blocklyDiv"></div>
                     </div>
-                    <button id="execute-btn" class="primary-btn">Execute Logic</button>
+                    <div style="height: 3rem;"></div>
                 </div>
             </div>
+
+            <div id="ai-interface" class="ai-interface" style="display: none;">
+                <div class="faq-panel">
+                    <h3>Quick Guide & FAQ</h3>
+                    <div class="faq-list">
+                        <div class="faq-item">
+                            <span class="faq-q">How do I move around?</span>
+                            <span class="faq-a">Use WASD or Arrow Keys! Walk onto a station and press Spacebar to
+                                enter.</span>
+                        </div>
+                        <div class="faq-item">
+                            <span class="faq-q">How do I schedule an action?</span>
+                            <span class="faq-a">Each station has a logic editor. You can drag blocks to "schedule"
+                                actions like feeding or playing. Each station will have their own unique actions, and
+                                the status and schedule panel will allow you to run all blocks for the day and move onto
+                                the next level. Running commands in individual stations will only show you a temporary
+                                effect and not change your variables. In order to change your variables - aka run
+                                actions for the day - you need to "execute all" in the command sidebar in the 1D
+                                interface.</span>
+                        </div>
+                        <div class="faq-item">
+                            <span class="faq-q">Buying Food</span>
+                            <span class="faq-a">Go to the Grocery Store station, use the "Buy Food" block in your
+                                schedule, and execute it!</span>
+                        </div>
+                        <div class="faq-item">
+                            <span class="faq-q">Automation (Execute All)</span>
+                            <span class="faq-a">The blue button on your sidebar runs ALL schedules from all stations at
+                                once. It's the ultimate pet-care tool! See effects in seconds, not days.</span>
+                        </div>
+                        <div class="faq-item">
+                            <span class="faq-q">Station Locations</span>
+                            <span class="faq-a">Home (left side), Grocery Store (top right), Vet (bottom), and AI Guide
+                                (bottom right).</span>
+                        </div>
+                        <div class="faq-item">
+                            <span class="faq-q">Leveling Up</span>
+                            <span class="faq-a"> Each time you run a day (executing all), your pet levels up by 1 level.
+                                Every level, variables such as hunger are harder to
+                                increment, meaning the overall gameplay gets harder. However, executing in specific
+                                stations does not level you up, as they are sandbox areas.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-panel">
+                    <div class="chat-container">
+                        <div id="chat-messages" class="chat-messages">
+                            <div class="message assistant">Welcome to our project! I'm RP AI. Ask me anything about
+                                PetRPG!</div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" id="ai-chat-input" placeholder="Ask a follow-up question..."
+                                autocomplete="off">
+                            <button id="ai-send-btn">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="generic-content" style="display: none;">
                 <p>Coming soon...</p>
             </div>
+        </div>
+    </div>
+
+    <!-- Game Over Overlay -->
+    <div id="game-over-overlay" class="modal-overlay"
+        style="display: none; background: rgba(0,0,0,0.95); z-index: 200;">
+        <div class="glass-card fade-in" style="max-width: 500px;">
+            <h1 style="color: #ef4444; font-size: 3.5rem; margin-bottom: 1rem;">GAME OVER</h1>
+            <p style="margin-bottom: 2rem;">You ran out of lives! Your pet couldn't keep up with the schedule.</p>
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <button id="view-summary-btn" class="secondary-btn" style="width: 100%;">View Summary</button>
+                <button id="restart-game-btn" class="primary-btn" style="background: #ef4444;">Restart Account</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Overlay -->
+    <div id="summary-overlay" class="modal-overlay" style="display: none; z-index: 210;">
+        <div class="glass-card fade-in" style="max-width: 400px; position: relative;">
+            <button id="close-summary" class="close-modal">&times;</button>
+            <h2>Daily Summary</h2>
+            <div style="margin: 2rem 0; text-align: left; color: var(--text-dim);">
+                <p>Summary here...</p>
+                <!-- Placeholder for dynamic summary if needed later -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Random Event Overlay -->
+    <div id="event-overlay" class="modal-overlay" style="display: none; z-index: 150;">
+        <div class="glass-card fade-in"
+            style="max-width: 450px; text-align: center; border: 1px solid var(--accent-primary);">
+            <h2 id="event-title" style="color: var(--accent-primary); margin-bottom: 1rem;">Sudden Event!</h2>
+            <p id="event-description" style="font-size: 1.1rem; margin-bottom: 1.5rem; line-height: 1.6;"></p>
+            <div id="event-stat-changes" style="margin-bottom: 2rem; font-weight: bold;"></div>
+            <button id="close-event-btn" class="primary-btn" style="width: 100%;">Got it!</button>
         </div>
     </div>
 
@@ -210,7 +321,9 @@
             <block type="wash_pet"></block>
             <block type="heal_pet"></block>
             <block type="daily_checkup"></block>
-            <block type = "buy_food"></block>
+            <block type="buy_food"></block>
+            <block type="sleep"></block>
+            <block type="work"></block>
         </category>
         <category name="Logic" colour="210">
             <block type="controls_if"></block>
@@ -219,6 +332,7 @@
         </category>
     </xml>
 
+    <!-- This is the brain of the game -->
     <script src="script.js"></script>
 </body>
 
