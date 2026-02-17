@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
         game: document.getElementById('game-screen')
     };
 
-
+    // gets all html elements
     const usernameInput = document.getElementById('username-input');
     const loginBtn = document.getElementById('login-btn');
     const nextStepBtn = document.getElementById('next-step');
@@ -247,6 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // functions that are connected to the blocks, changes global stats of pets
+
     window.gameActions = {
         checkLifeLoss: () => {
             const vitals = ['health', 'happiness', 'hunger', 'hygiene', 'energy'];
@@ -263,6 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
         healPet: () => {
             if (window.gameStats.money >= 10) {
                 window.gameStats.money -= 10;
+                // Math.min ensures the value doesnt go over 100
                 window.gameStats.health = Math.min(100, window.gameStats.health + 20);
                 console.log("Healed! Health:", window.gameStats.health);
             } else {
@@ -584,6 +586,21 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         document.getElementById('view-summary-btn').onclick = () => {
+            const summaryContent = document.getElementById('summary-content');
+            const stats = window.gameStats;
+
+            summaryContent.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                    <div><strong>Health:</strong> ${Math.max(0, stats.health)}</div>
+                    <div><strong>Happiness:</strong> ${Math.max(0, stats.happiness)}</div>
+                    <div><strong>Hunger:</strong> ${Math.max(0, stats.hunger)}</div>
+                    <div><strong>Hygiene:</strong> ${Math.max(0, stats.hygiene)}</div>
+                    <div><strong>Energy:</strong> ${Math.max(0, stats.energy)}</div>
+                    <div><strong>Money:</strong> $${stats.money}</div>
+                    <div><strong>Level:</strong> ${stats.userLvl}</div>
+                </div>
+            `;
+
             document.getElementById('summary-overlay').style.display = 'flex';
         };
 
@@ -1043,7 +1060,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const aiSendBtn = document.getElementById('ai-send-btn');
     const chatMessages = document.getElementById('chat-messages');
 
-    const GROQ_API_KEY = "ENTER GROQ API KEY HERE!!!!";
+    const GROQ_API_KEY = "ENTER_GROQ_API_KEY";
     const SYSTEM_PROMPT = `You are the PetRPG Guide. You help users understand how to play the game.
 Game Context included below:
 - This is petRPG, a game for TJFBLA Intro to Programming 2026 where users move around a grid and enter stations to make scheduling commands to take care of the pet.
