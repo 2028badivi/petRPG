@@ -1,4 +1,5 @@
 // This code runs as soon as the page loads
+// we added this so that the code runs when the page is ready
 document.addEventListener('DOMContentLoaded', () => {
     let currentUser = null;
     let currentStep = 1;
@@ -31,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'Work': { summary: 'None', xml: null }
     };
 
+    // we added this so that your game is saved
     function saveGameState() {
         if (currentUser) {
             localStorage.setItem(`user_variables_${currentUser}`, JSON.stringify(window.gameStats));
@@ -79,9 +81,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============
     // (BLOCKLY SECTION) custom blocks used for the Blockly.js interface at stations (vet, home, grocery store). Blocks created with Google Blockly Developer Tools
     // ============
+    // we added this so that there are blocks for the stations
     function defineCustomBlocks() {
         if (typeof Blockly === 'undefined') return;
 
+        // we added this block so that you can feed your pet
         Blockly.Blocks['feed_pet'] = {
             init: function () {
                 this.appendDummyInput()
@@ -95,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.setHelpUrl("");
             }
         };
+        // we added this block so that you can heal your pet
         Blockly.Blocks['heal_pet'] = {
             init: function () {
                 this.appendDummyInput()
@@ -107,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.setHelpUrl("");
             }
         };
+        // we added this block so that you can buy food
         Blockly.Blocks['buy_food'] = {
             init: function () {
                 this.appendDummyInput()
@@ -120,6 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.setHelpUrl("");
             }
         };
+        // we added this block so that the pet can sleep
         Blockly.Blocks['sleep'] = {
             init: function () {
                 this.appendDummyInput()
@@ -131,6 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.setHelpUrl("");
             }
         };
+        // we added this block so that you can check health
         Blockly.Blocks['daily_checkup'] = {
             init: function () {
                 this.appendDummyInput()
@@ -146,6 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
+        // we added this block so that you can work
         Blockly.Blocks['work'] = {
             init: function () {
                 this.appendDummyInput()
@@ -161,6 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
             maxInstances: 1
         };
 
+        // we added this block so that you can play
         Blockly.Blocks['play_pet'] = {
             init: function () {
                 this.appendDummyInput().appendField("play with pet");
@@ -170,6 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
+        // we added this block so that you can wash the pet
         Blockly.Blocks['wash_pet'] = {
             init: function () {
                 this.appendDummyInput().appendField("wash pet");
@@ -179,6 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
+        // we added this block so that you can see stats
         Blockly.Blocks['get_pet_stat'] = {
             init: function () {
                 this.appendDummyInput()
@@ -249,6 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // functions that are connected to the blocks, changes global stats of pets
 
     window.gameActions = {
+        // we added this so that you lose a life if stats are zero
         checkLifeLoss: () => {
             const vitals = ['health', 'happiness', 'hunger', 'hygiene', 'energy'];
             const hitZero = vitals.some(v => window.gameStats[v] <= 0);
@@ -261,6 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         },
+        // we added this so that the health goes up
         healPet: () => {
             if (window.gameStats.money >= 10) {
                 window.gameStats.money -= 10;
@@ -271,6 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log("Need $10 to heal!");
             }
         },
+        // we added this so that you can do a small heal
         dailyCheckup: () => {
             if (window.gameStats.money >= 2) {
                 window.gameStats.money -= 2;
@@ -280,6 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log("Need $2 for checkup!");
             }
         },
+        // we added this so that hunger goes down
         feedPet: (times) => {
             if (window.gameStats.currentFood >= times) {
                 // this formula makes variable increment less as level goes up, which means higher lvl --> overall harder gameplay
@@ -294,6 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
         },
+        // we added this so that happiness goes up
         playPet: () => {
             const cost = 10;
             if (window.gameStats.energy >= cost) {
@@ -306,13 +323,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log("Too tired to play! Need 10 energy.");
             }
         },
+        // we added this so that energy goes up
         sleepPet: () => {
             window.gameStats.energy += 50;
             window.gameStats.energy = Math.min(100, window.gameStats.energy);
             console.log("Sleeping...");
         },
+        // we added this so that hygiene goes up
         washPet: () => { console.log("Washing..."); },
 
+        // we added this so that you can get more food
         buyFood: (amount) => {
             if (window.gameStats.money >= amount) {
                 window.gameStats.money -= amount;
@@ -322,6 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
         },
+        // we added this so that you can earn money
         workJob: (hours) => {
             const wage = 15;
             const mod = PET_MODIFIERS[currentPetType] || {};
@@ -356,6 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     checkSession();
     // stores user account in LocalStorage
+    // we added this so that we know if you are logged in
     function checkSession() {
         const storedUser = localStorage.getItem('neo_user');
         if (storedUser) {
@@ -365,11 +387,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // we added this so that you can see different pages
     function showScreen(screenId) {
         Object.values(screens).forEach(s => s.classList.remove('active'));
         screens[screenId].classList.add('active');
     }
 
+    // we added this so that you can access your account
     function login(username) {
         currentUser = username;
         const userData = JSON.parse(localStorage.getItem(`user_data_${username}`));
@@ -383,6 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // we added this so that the game begins
     function startGame() {
         displayName.textContent = currentUser;
 
@@ -417,6 +442,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateSidebarUI();
     }
 
+    // we added this so that the sidebar shows your plans
     function updateSidebarUI() {
         const list = document.getElementById('scheduled-actions-list');
         if (!list) return;
@@ -440,6 +466,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateMiniStatsUI();
     }
 
+    // we added this so that the small circles update
     function updateMiniStatsUI() {
         const stats = window.gameStats;
         const colors = {
@@ -464,6 +491,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // we added this so that all your plans happen at once
     async function executeAllActions() {
         if (!workspace && typeof Blockly === 'undefined') {
             alert("Logic engine not ready.");
@@ -569,6 +597,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 2000);
     }
 
+    // we added this so that you know when you lose
     function showGameOver() {
         const gameOverOverlay = document.getElementById('game-over-overlay');
         gameOverOverlay.style.display = 'flex';
@@ -620,6 +649,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { title: "Extra Hungry", desc: "For some reason, your pet is much hungrier than usual today.", stats: { hunger: -20 } }
     ];
 
+    // we added this so that random things happen
     function triggerRandomEvent() {
         const event = randomEventsList[Math.floor(Math.random() * randomEventsList.length)];
         const overlay = document.getElementById('event-overlay');
@@ -651,6 +681,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
 
+    // we added this so that you can read your plan
     function summarizeWorkspace(ws) {
         if (!ws) return 'None';
         const topBlocks = ws.getTopBlocks(false);
@@ -664,6 +695,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return summaries.join('<br>') || 'None';
     }
 
+    // we added this so that each block has a name
     function getBlockSummary(block) {
         let text = '';
         const type = block.type;
@@ -703,6 +735,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }
 
+    // we added this so that the buildings appear
     function generateStations() {
         stationsContainer.innerHTML = '';
         stations = stationData.map(s => {
@@ -719,6 +752,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ======
     // world generation + character positions
     // ======
+    // we added this so that there are trees
     function generateTrees() {
         obstaclesContainer.innerHTML = '';
         trees = [];
@@ -742,23 +776,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // we added this so that you see where you are
     function updateCharacterPosition() {
         character.style.left = `${characterPos.x}%`;
         character.style.top = `${characterPos.y}%`;
     }
 
+    // we added this so that the pet follows you
     function updatePetPosition() {
         pet.style.left = `${petPos.x}%`;
         pet.style.top = `${petPos.y}%`;
     }
 
 
+    // we added this so that you dont walk through things
     function isColliding(nx, ny) {
         const treeHit = trees.some(t => Math.abs(nx - t.x) < 3 && Math.abs(ny - t.y) < 3);
         return treeHit;
     }
 
 
+    // we added this so that you can control the character
     function handleInput(e) {
         if (isModalOpen) return;
 
@@ -772,6 +810,7 @@ document.addEventListener('DOMContentLoaded', () => {
         handleMovement(key);
     }
 
+    // we added this so that you can enter buildings
     function checkStationInteraction() {
         stations.forEach(s => {
             const dist = Math.sqrt(Math.pow(characterPos.x - s.x, 2) + Math.pow(characterPos.y - s.y, 2));
@@ -788,6 +827,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // =========
     // stations and blockly.js UI implementations
     // =========
+    // we added this so that the popup opens
     function openModal(title) {
         modalTitle.textContent = title;
         const stationInterface = document.getElementById('station-interface');
@@ -874,6 +914,7 @@ document.addEventListener('DOMContentLoaded', () => {
         isModalOpen = true;
     }
 
+    // we added this so that each station has different blocks
     function updateToolboxForStation(station) {
         let toolboxXml = '';
 
@@ -917,6 +958,7 @@ document.addEventListener('DOMContentLoaded', () => {
         workspace.updateToolbox(toolboxXml);
     }
 
+    // we added this so that the screen matches the numbers
     function syncUIWithVariables() {
         const stats = window.gameStats;
         console.log("Syncing UI with stats:", stats);
@@ -943,12 +985,14 @@ document.addEventListener('DOMContentLoaded', () => {
         changeExpression();
     }
 
+    // we added this so that the progress bars move
     function updateStat(id, val) {
         const truncatedVal = Math.trunc(val);
         document.getElementById(`bar-${id}`).style.width = `${truncatedVal}%`;
         document.getElementById(`val-${id}`).textContent = `${truncatedVal} / 100`;
     }
 
+    // we added this so that you can close the popup
     function closeModal() {
         modal.classList.remove('active');
         isModalOpen = false;
@@ -1155,6 +1199,7 @@ or a biology related question. Make sure your answers are safe for work as well,
 
     let chatHistory = [];
 
+    // we added this so that you can talk to the ai
     async function sendToAI() {
         const userText = aiChatInput.value.trim();
         if (!userText) return;
@@ -1229,6 +1274,7 @@ or a biology related question. Make sure your answers are safe for work as well,
         }
     }
 
+    // we added this so that the chat shows up
     function addMessage(text, role) { // allows user to input message into AI interface for the intelligent Q&A section
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${role}`;
@@ -1256,6 +1302,7 @@ or a biology related question. Make sure your answers are safe for work as well,
         3. Sad (based on happiness)
         4. Normal (default if all global variables are above threshold)
     */
+    // we added this so that the pet looks happy or sad
     function changeExpression() { //changes expression of pet based on pet variables (hygiene, health, hunger, etc.) after every execution
         const petType = pet.classList[1];
         const modalPet = document.getElementById("modal-pet-sprite");
@@ -1276,6 +1323,7 @@ or a biology related question. Make sure your answers are safe for work as well,
     }
 
     // This makes stats go down a bit every day
+    // we added this so that the game gets harder
     function statsDecrement() { // decrements stats every execution so game can properly end
         const userLvl = window.gameStats.userLvl;
         const mod = PET_MODIFIERS[currentPetType] || {};
@@ -1288,6 +1336,7 @@ or a biology related question. Make sure your answers are safe for work as well,
         window.gameStats.hygiene = Math.max(0, window.gameStats.hygiene - (10 - (0.25 * userLvl)));
     }
 
+    // we added this so that you can move the menu
     function initSidebarDrag() {
         const sidebar = document.getElementById('status-sidebar');
         const handle = document.getElementById('sidebar-drag');
