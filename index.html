@@ -34,7 +34,7 @@
         </section>
 
 
-
+        <!-- log in screen-->
         <section id="onboarding-screen" class="view">
             <div class="glass-card fade-in">
                 <h2>Choose your pet</h2>
@@ -44,6 +44,7 @@
                         <input type="text" id="q1" placeholder="e.g. bob">
                     </div>
                     <div class="step" data-step="2">
+                        <!--radio buttons to choose pet-->
                         <p>Choose your companion</p>
                         <div class="pet-selection-grid"
                             style="display: flex; gap: 1rem; justify-content: center; margin: 1.5rem 0;">
@@ -83,7 +84,7 @@
         </section>
 
 
-
+        <!-- main game-->
         <section id="game-screen" class="view">
             <div class="game-ui">
                 <div class="user-badge">
@@ -103,7 +104,7 @@
                 <!-- This is your pet friend -->
                 <div id="pet" class="pet"></div>
             </div>
-
+            <!--sidebar that shows all active blocks-->
             <div id="status-sidebar" class="status-sidebar">
                 <div class="sidebar-drag-handle" id="sidebar-drag"></div>
                 <div class="sidebar-header">
@@ -146,13 +147,14 @@
         </section>
     </div>
 
-
+    <!--overlay when you enter station-->
     <div id="modal-overlay" class="modal-overlay">
         <div class="modal-content">
             <button id="close-modal" class="close-modal">&times;</button>
             <h2 id="modal-title">Station</h2>
             <div id="station-interface" class="vet-interface" style="display: none;">
                 <div class="left-panel">
+                    <!--Progress bars in the overlay-->
                     <div class="modal-pet-display">
                         <div id="modal-pet-sprite" class="pet"></div>
                     </div>
@@ -207,7 +209,7 @@
                     <div style="height: 3rem;"></div>
                 </div>
             </div>
-
+            <!--Q&A Station-->
             <div id="ai-interface" class="ai-interface" style="display: none;">
                 <div class="faq-panel">
                     <h3>Quick Guide & FAQ</h3>
@@ -292,7 +294,7 @@
             <button id="close-summary" class="close-modal">&times;</button>
             <h2>Daily Summary</h2>
             <div style="margin: 2rem 0; text-align: left; color: var(--text-dim);">
-                <p>Summary here...</p>
+                <div id="summary-content">Summary here...</div>
                 <!-- Placeholder for dynamic summary if needed later -->
             </div>
         </div>
