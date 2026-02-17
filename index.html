@@ -1,15 +1,25 @@
+<!-- we added this to the doc so that the browser knows its html -->
 <!DOCTYPE html>
+<!-- we added this to the html so that the language is english -->
 <html lang="en">
-    <!-- We are importing all the modules and open source script here in the head section-->
+<!-- We are importing all the modules and open source script here in the head section-->
+
+<!-- we added this to the head so that we can load scripts -->
+
 <head>
+    <!-- we added this to the meta so that text works -->
     <meta charset="UTF-8">
+    <!-- we added this to the viewport so that it scales on mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- we added this to the title so that the tab has a name -->
     <title>PetRPG</title>
     <meta name="description" content="A game for TJFBLA Intro to Programming 2026.">
+    <!-- we added this to the link so that the game looks good -->
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- we added this to the script so that we can use blocks -->
     <script src="https://unpkg.com/blockly/blockly.min.js"></script>
     <script src="https://unpkg.com/blockly/blocks_compressed.js"></script>
     <script src="https://unpkg.com/blockly/javascript_compressed.js"></script>
@@ -17,38 +27,53 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 
+<!-- we added this to the body so that the content is shown -->
+
 <body>
+    <!-- we added this to the app div so that everything is contained -->
     <div id="app">
 
+        <!-- we added this to the auth screen so that you can login -->
         <section id="auth-screen" class="view active">
+            <!-- we added this to the glass card so that the box looks modern -->
             <div class="glass-card fade-in">
                 <!-- The name of the game -->
+                <!-- we added this to the h1 so that the title is huge -->
                 <h1>PetRPG</h1>
+                <!-- we added this to the subtitle so that you know what to do -->
                 <p class="subtitle">Sign in</p>
 
 
                 <!-- We made a placeholder with the textfield and also disabled autocomplete because we wanted it to be a unique entity. -->
+                <!-- we added this to the input group so that you can type -->
                 <div class="input-group">
                     <input type="text" id="username-input" placeholder="What's your name?" autocomplete="off">
                 </div>
+                <!-- we added this to the button so that you can start -->
                 <button id="login-btn" class="primary-btn">Start game</button>
             </div>
         </section>
 
 
         <!-- log in screen-->
+        <!-- we added this to the onboarding screen so that you can create a pet -->
         <section id="onboarding-screen" class="view">
             <div class="glass-card fade-in">
+                <!-- we added this to the h2 so that you know what to choose -->
                 <h2>Choose your pet</h2>
                 <!-- start the onboarding process -->
+                <!-- we added this to the steps so that we track progress -->
                 <div id="onboarding-steps">
+                    <!-- we added this to the step so that we know where we are -->
                     <div class="step active" data-step="1">
                         <p>What is your pet's name?</p>
                         <input type="text" id="q1" placeholder="e.g. bob">
                     </div>
+                    <!-- we added this to the second step so that you pick a pet -->
                     <div class="step" data-step="2">
                         <!--radio buttons to choose pet-->
                         <p>Choose your companion</p>
+                        <!-- we added this to the grid so that you see options -->
                         <div class="pet-selection-grid"
                             style="display: flex; gap: 1rem; justify-content: center; margin: 1.5rem 0;">
                             <label class="pet-card">
@@ -75,12 +100,14 @@
                         </div>
                         <input type="hidden" id="q2">
                     </div>
+                    <!-- we added this to the third step so that you can finish -->
                     <div class="step" data-step="3">
                         <p>You're ready to start!</p>
                         <button id="finish-onboarding" class="primary-btn">Create Account</button>
                     </div>
                 </div>
                 <div class="step-controls">
+                    <!-- we added this to the next button so that you can proceed -->
                     <button id="next-step" class="secondary-btn">Next</button>
                 </div>
             </div>
@@ -88,37 +115,53 @@
 
 
         <!-- main game-->
+        <!-- we added this to the game screen so that you can play -->
         <section id="game-screen" class="view">
+            <!-- we added this to the ui so that you see info -->
             <div class="game-ui">
+                <!-- we added this to the badge so that you see your name -->
                 <div class="user-badge">
                     <p>Hello, </p>
                     <span id="display-name"></span>
                     <button id="logout-btn">log out</button>
                 </div>
+                <!-- we added this to the hint so that you know how to move -->
                 <div class="controls-hint">use WASD or arrow keys to move around!</div>
             </div>
 
+            <!-- we added this to the viewport so that you see the map -->
             <div class="world-viewport">
+                <!-- we added this to the grid so that the floor looks better -->
                 <div class="world-grid"></div>
+                <!-- we added this to the obstacles so that there are trees -->
                 <div id="obstacles-container"></div>
+                <!-- we added this to the stations so that you can visit places -->
                 <div id="stations-container"></div>
                 <!-- This is the person you control -->
+                <!-- we added this to the character so that you have a body -->
                 <div id="character" class="pixel-human"></div>
                 <!-- This is your pet friend -->
+                <!-- we added this to the pet so that you have a friend -->
                 <div id="pet" class="pet"></div>
             </div>
             <!--sidebar that shows all active blocks-->
+            <!-- we added this to the sidebar so that you see your schedule -->
             <div id="status-sidebar" class="status-sidebar">
+                <!-- we added this to the handle so that you can move the menu -->
                 <div class="sidebar-drag-handle" id="sidebar-drag"></div>
+                <!-- we added this to the header so that it looks nice -->
                 <div class="sidebar-header">
                     <h3>Status & Schedule</h3>
                     <div class="sidebar-meta">
+                        <!-- we added this to the level so that you know your progress -->
                         <h3 id="levelHeader">Level: 1</h3>
                         <span class="meta-separator">|</span>
                         <h3 id="livesHeader">Lives: 2</h3>
                     </div>
                 </div>
+                <!-- we added this to the overview so that the stats are clear -->
                 <div class="stats-overview">
+                    <!-- we added this to the mini stat so that you see health -->
                     <div class="mini-stat" title="Health">
                         <div class="circle-progress" id="mini-health"></div>
                         <span class="mini-label">HLT</span>
@@ -131,16 +174,19 @@
                         <div class="circle-progress" id="mini-hunger"></div>
                         <span class="mini-label">HGR</span>
                     </div>
+                    <!-- we added this to the money so that you know your cash -->
                     <div class="mini-money">
                         <span id="mini-val-money">$0</span>
                     </div>
 
                 </div>
+                <!-- we added this to the list so that you see what you planned -->
                 <div id="scheduled-actions-list" class="sidebar-content">
 
                 </div>
 
                 <div class="sidebar-footer">
+                    <!-- we added this to the button so that you can run the day -->
                     <button id="execute-all-btn" class="primary-btn">Execute All</button>
                 </div>
             </div>
@@ -151,20 +197,28 @@
     </div>
 
     <!--overlay when you enter station-->
+    <!-- we added this to the overlay so that the popup appears -->
     <div id="modal-overlay" class="modal-overlay">
+        <!-- we added this to the content so that information is shown -->
         <div class="modal-content">
+            <!-- we added this to the close button so that you can exit -->
             <button id="close-modal" class="close-modal">&times;</button>
             <h2 id="modal-title">Station</h2>
+            <!-- we added this to the interface so that you can control the station -->
             <div id="station-interface" class="vet-interface" style="display: none;">
+                <!-- we added this to the left panel so that you see stats -->
                 <div class="left-panel">
                     <!--Progress bars in the overlay-->
+                    <!-- we added this to the pet display so that you see the animal -->
                     <div class="modal-pet-display">
                         <div id="modal-pet-sprite" class="pet"></div>
                     </div>
+                    <!-- we added this to the stats container so that bars are aligned -->
                     <div class="stats-container">
                         <div class="stat-item">
                             <label>Health</label>
                             <div class="bar-bg">
+                                <!-- we added this to the health bar so that it fills up -->
                                 <div id="bar-health" class="bar-fill"></div>
                             </div>
                             <div id="val-health" class="stat-val">0 / 100</div>
@@ -204,8 +258,10 @@
                         </div>
                     </div>
                 </div>
+                <!-- we added this to the right panel so that you can code -->
                 <div class="right-panel">
                     <h3 id="station-subtitle">Pet Logic Editor</h3>
+                    <!-- we added this to the editor so that blocks go here -->
                     <div class="block-editor">
                         <div id="blocklyDiv"></div>
                     </div>
@@ -213,7 +269,9 @@
                 </div>
             </div>
             <!--Q&A Station-->
+            <!-- we added this to the ai interface so that you can chat -->
             <div id="ai-interface" class="ai-interface" style="display: none;">
+                <!-- we added this to the faq so that you can learn -->
                 <div class="faq-panel">
                     <h3>Quick Guide & FAQ</h3>
                     <div class="faq-list">
@@ -257,6 +315,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- we added this to the chat so that you can talk -->
                 <div class="chat-panel">
                     <div class="chat-container">
                         <div id="chat-messages" class="chat-messages">
@@ -279,6 +338,7 @@
     </div>
 
     <!-- Game Over Overlay -->
+    <!-- we added this to the game over so that you know you lost -->
     <div id="game-over-overlay" class="modal-overlay"
         style="display: none; background: rgba(0,0,0,0.95); z-index: 200;">
         <div class="glass-card fade-in" style="max-width: 500px;">
@@ -292,6 +352,7 @@
     </div>
 
     <!-- Summary Overlay -->
+    <!-- we added this to the summary so that you see results -->
     <div id="summary-overlay" class="modal-overlay" style="display: none; z-index: 210;">
         <div class="glass-card fade-in" style="max-width: 400px; position: relative;">
             <button id="close-summary" class="close-modal">&times;</button>
@@ -304,6 +365,7 @@
     </div>
 
     <!-- Random Event Overlay -->
+    <!-- we added this to the event so that actual things happen -->
     <div id="event-overlay" class="modal-overlay" style="display: none; z-index: 150;">
         <div class="glass-card fade-in"
             style="max-width: 450px; text-align: center; border: 1px solid var(--accent-primary);">
@@ -314,6 +376,7 @@
         </div>
     </div>
 
+    <!-- we added this to the xml so that blocks are defined -->
     <xml id="toolbox" style="display: none">
         <category name="Movement" colour="210">
             <block type="move_forward"></block>
@@ -338,6 +401,7 @@
     </xml>
 
     <!-- This is the brain of the game -->
+    <!-- we added this to the script so that the game runs -->
     <script src="script.js"></script>
 </body>
 
