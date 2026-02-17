@@ -104,4 +104,6 @@ Used CSS button generator and other tools from bestcssbuttongenerator.com to ren
 
  Official CSS documentation:
  https://developer.mozilla.org/en-US/docs/Web/CSS
+
+ Advice from public forums (debugged using advice from Stack Overflow)
  
