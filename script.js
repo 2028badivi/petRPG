@@ -1336,31 +1336,5 @@ or a biology related question. Make sure your answers are safe for work as well,
         window.gameStats.hygiene = Math.max(0, window.gameStats.hygiene - (10 - (0.25 * userLvl)));
     }
 
-    // we added this so that you can move the menu
-    function initSidebarDrag() {
-        const sidebar = document.getElementById('status-sidebar');
-        const handle = document.getElementById('sidebar-drag');
-        let isDragging = false;
-        let offset = { x: 0, y: 0 };
 
-        handle.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            offset.x = e.clientX - sidebar.offsetLeft;
-            offset.y = e.clientY - sidebar.offsetTop;
-            sidebar.style.animation = 'none'; // Stop animation during drag
-            sidebar.style.transition = 'none';
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            sidebar.style.left = (e.clientX - offset.x) + 'px';
-            sidebar.style.top = (e.clientY - offset.y) + 'px';
-        });
-
-        document.addEventListener('mouseup', () => {
-            isDragging = false;
-        });
-    }
-
-    initSidebarDrag();
 });
