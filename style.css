@@ -1,4 +1,5 @@
 /* These are the colors we use everywhere */
+/* we added this to the root so that the variables are everywhere */
 :root {
     --bg-color: #0f172a;
     --accent-primary: #62c955;
@@ -11,6 +12,7 @@
     --danger: #ef4444;
 }
 
+/* we added this to everything so that the margins are reset */
 * {
     margin: 0;
     padding: 0;
@@ -18,6 +20,7 @@
 }
 
 /* This makes sure everything fits on the page */
+/* we added this to the body so that the background color fits */
 body {
     background-color: var(--bg-color);
     color: var(--text-main);
@@ -27,6 +30,7 @@ body {
     width: 100vw;
 }
 
+/* we added this to the app so that the content is centered */
 #app {
     height: 100%;
     display: flex;
@@ -34,6 +38,7 @@ body {
     align-items: center;
 }
 
+/* we added this to the view so that the screens are hidden */
 .view {
     display: none;
     width: 100%;
@@ -43,11 +48,13 @@ body {
     flex-direction: column;
 }
 
+/* we added this to the active view so that the screen shows up */
 .view.active {
     display: flex;
 }
 
 /* Flat Card */
+/* we added this to the glass card so that the box looks cool */
 .glass-card {
     background: var(--panel-bg);
     border: 1px solid var(--border-color);
@@ -58,6 +65,7 @@ body {
     text-align: center;
 }
 
+/* we added this to the h1 so that the title is big */
 h1 {
     font-size: 2.5rem;
     font-weight: 700;
@@ -65,6 +73,7 @@ h1 {
     color: var(--accent-secondary);
 }
 
+/* we added this to the subtitle so that the text is smaller */
 .subtitle {
     color: var(--text-dim);
     margin-bottom: 2rem;
@@ -73,10 +82,12 @@ h1 {
     letter-spacing: 1px;
 }
 
+/* we added this to the input group so that the inputs have space */
 .input-group {
     margin-bottom: 1.5rem;
 }
 
+/* we added this to the text input so that the user can type */
 input[type="text"] {
     width: 100%;
     padding: 0.8rem;
@@ -88,11 +99,13 @@ input[type="text"] {
     outline: none;
 }
 
+/* we added this to the focused input so that the border lights up */
 input[type="text"]:focus {
     border-color: var(--accent-primary);
 }
 
 /* This is how the main buttons look */
+/* we added this to the primary button so that the main buttons pop */
 .primary-btn {
     width: 100%;
     padding: 1rem;
@@ -105,6 +118,7 @@ input[type="text"]:focus {
     text-transform: uppercase;
 }
 
+/* we added this to the secondary button so that the side buttons look okay */
 .secondary-btn {
     background: #334155;
     border: none;
@@ -117,6 +131,7 @@ input[type="text"]:focus {
 
 /* World */
 /* This is the big green area where you walk around */
+/* we added this to the world viewport so that the game stays in the box */
 .world-viewport {
     width: 90vw;
     height: 70vh;
@@ -130,6 +145,7 @@ input[type="text"]:focus {
     align-items: center;
 }
 
+/* we added this to the world grid so that the ground has squares */
 .world-grid {
     position: absolute;
     width: 200%;
@@ -142,6 +158,7 @@ input[type="text"]:focus {
 }
 
 /* Pixel Art Logic remains same */
+/* we added this to the pixel human so that the player looks like a person */
 .pixel-human {
     position: absolute;
     top: 50%;
@@ -167,6 +184,7 @@ input[type="text"]:focus {
 }
 
 /* Pets and Trees */
+/* we added this to the pet class so that the animals move smoothly */
 .pet {
     position: absolute;
     width: 50px;
@@ -179,6 +197,7 @@ input[type="text"]:focus {
     image-rendering: pixelated;
 }
 
+/* we added this to the cat so that it looks like a cat */
 .pet.cat {
     box-shadow: none;
     width: 50px;
@@ -190,6 +209,7 @@ input[type="text"]:focus {
     image-rendering: pixelated;
 }
 
+/* we added this to the dog so that it looks like a dog */
 .pet.dog {
     box-shadow: none;
     width: 50px;
@@ -201,6 +221,7 @@ input[type="text"]:focus {
     image-rendering: pixelated;
 }
 
+/* we added this to the rabbit so that it looks like a rabbit */
 .pet.rabbit {
     box-shadow: none;
     width: 50px;
@@ -214,6 +235,7 @@ input[type="text"]:focus {
 
 
 
+/* we added this to the tree so that there are obstacles */
 .tree {
     position: absolute;
     width: 24px;
@@ -221,6 +243,7 @@ input[type="text"]:focus {
     z-index: 5;
 }
 
+/* we added this to the tree after so that it has detailed leaves */
 .tree::after {
     content: '';
     position: absolute;
@@ -239,6 +262,7 @@ input[type="text"]:focus {
 }
 
 /* Stations */
+/* we added this to the station so that you can see where to go */
 .station {
     position: absolute;
     width: 80px;
@@ -257,6 +281,7 @@ input[type="text"]:focus {
 }
 
 /* Sidebar */
+/* we added this to the sidebar so that you can see your stats */
 .status-sidebar {
     position: absolute;
     left: 20px;
@@ -271,6 +296,7 @@ input[type="text"]:focus {
     flex-direction: column;
 }
 
+/* we added this to the drag handle so that you can move the menu */
 .sidebar-drag-handle {
     width: 100%;
     height: 12px;
@@ -282,16 +308,19 @@ input[type="text"]:focus {
     border-radius: 12px 12px 0 0;
 }
 
+/* we added this to the header so that there is a title */
 .sidebar-header {
     margin-top: 5px;
 }
 
+/* we added this to the h3 in the header so that the text is colored */
 .sidebar-header h3 {
     font-size: 1rem;
     color: var(--accent-secondary);
     margin-bottom: 0.5rem;
 }
 
+/* we added this to the meta info so that the level is shown */
 .sidebar-meta {
     display: flex;
     align-items: center;
@@ -301,11 +330,13 @@ input[type="text"]:focus {
     margin-bottom: 1rem;
 }
 
+/* we added this to the meta h3 so that the text is small */
 .sidebar-meta h3 {
     font-size: 0.85rem;
     margin-bottom: 0;
 }
 
+/* we added this to the overview so that the circles are aligned */
 .stats-overview {
     display: flex;
     justify-content: space-around;
@@ -314,6 +345,7 @@ input[type="text"]:focus {
     padding-bottom: 1rem;
 }
 
+/* we added this to the mini stat so that the icons are centered */
 .mini-stat {
     display: flex;
     flex-direction: column;
@@ -321,6 +353,7 @@ input[type="text"]:focus {
     gap: 4px;
 }
 
+/* we added this to the circle progress so that the stats look like pies */
 .circle-progress {
     width: 40px;
     height: 40px;
@@ -329,6 +362,7 @@ input[type="text"]:focus {
     position: relative;
 }
 
+/* we added this to the circle inside so that it becomes a ring */
 .circle-progress::after {
     content: '';
     position: absolute;
@@ -337,6 +371,7 @@ input[type="text"]:focus {
     border-radius: 50%;
 }
 
+/* we added this to the money display so that you know if you are rich */
 .mini-money {
     background: #064e3b;
     color: #4ade80;
@@ -346,6 +381,7 @@ input[type="text"]:focus {
     font-size: 1rem;
 }
 
+/* we added this to the sidebar content so that the list scrolls */
 .sidebar-content {
     display: flex;
     flex-direction: column;
@@ -354,6 +390,7 @@ input[type="text"]:focus {
     max-height: 40vh;
 }
 
+/* we added this to the status item so that each station has a box */
 .station-status-item {
     background: #0f172a;
     border: 1px solid var(--border-color);
@@ -361,22 +398,26 @@ input[type="text"]:focus {
     border-radius: 8px;
 }
 
+/* we added this to the station name so that it stands out */
 .station-name {
     font-size: 0.75rem;
     font-weight: 700;
     color: var(--accent-secondary);
 }
 
+/* we added this to the action text so that you can read the summary */
 .action-text {
     font-size: 0.8rem;
     color: #cbd5e1;
 }
 
+/* we added this to the execute button so that it has space above */
 #execute-all-btn {
     margin-top: 1rem;
 }
 
 /* Modal */
+/* we added this to the overlay so that the background dims */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -390,10 +431,12 @@ input[type="text"]:focus {
     align-items: center;
 }
 
+/* we added this to the active overlay so that it appears */
 .modal-overlay.active {
     display: flex;
 }
 
+/* we added this to the modal content so that the popup is centered */
 .modal-content {
     background: #0f172a;
     width: 95vw;
@@ -406,6 +449,7 @@ input[type="text"]:focus {
     position: relative;
 }
 
+/* we added this to the close button so that you can exit */
 .close-modal {
     position: absolute;
     top: 15px;
@@ -419,6 +463,7 @@ input[type="text"]:focus {
     font-weight: 700;
 }
 
+/* we added this to the vet interface so that the layout is split */
 .vet-interface {
     display: flex;
     gap: 15px;
@@ -427,6 +472,7 @@ input[type="text"]:focus {
     margin-top: 10px;
 }
 
+/* we added this to the panels so that they are side by side */
 .left-panel,
 .right-panel {
     flex: 1;
@@ -438,10 +484,12 @@ input[type="text"]:focus {
     flex-direction: column;
 }
 
+/* we added this to the stat item so that each bar has space */
 .stat-item {
     margin-bottom: 1rem;
 }
 
+/* we added this to the label so that you know what the bar is */
 .stat-item label {
     display: block;
     margin-bottom: 5px;
@@ -450,6 +498,7 @@ input[type="text"]:focus {
     color: var(--accent-secondary);
 }
 
+/* we added this to the bar background so that you see the empty part */
 .bar-bg {
     width: 100%;
     height: 24px;
@@ -459,35 +508,43 @@ input[type="text"]:focus {
     overflow: hidden;
 }
 
+/* we added this to the bar fill so that it animates */
 .bar-fill {
     height: 100%;
     transition: width 0.4s ease;
 }
 
+/* we added this to the health bar so that it is red */
 #bar-health {
     background: var(--danger);
 }
 
+/* we added this to the happiness bar so that it is green */
 #bar-happiness {
     background: var(--success);
 }
 
+/* we added this to the hunger bar so that it is orange */
 #bar-hunger {
     background: #ea580c;
 }
 
+/* we added this to the hygiene bar so that it is blue */
 #bar-hygiene {
     background: #3b82f6;
 }
 
+/* we added this to the energy bar so that it is yellow */
 #bar-energy {
     background: #facc15;
 }
 
+/* we added this to the money bar so that it is gold */
 #bar-money {
     background: #eab308;
 }
 
+/* we added this to the pet display so that the pet is big */
 .modal-pet-display {
     height: 140px;
     background: #0f172a;
@@ -499,11 +556,13 @@ input[type="text"]:focus {
     margin-bottom: 1rem;
 }
 
+/* we added this to the pet inside the modal so that it scales up */
 .modal-pet-display .pet {
     position: relative;
     transform: scale(4);
 }
 
+/* we added this to the block editor so that blockly fits well */
 .block-editor {
     flex: 1;
     min-height: 0;
@@ -514,12 +573,14 @@ input[type="text"]:focus {
     overflow: hidden;
 }
 
+/* we added this to the blockly div so that it fills the space */
 #blocklyDiv {
     position: absolute;
     inset: 0;
 }
 
 /* AI Panel */
+/* we added this to the ai interface so that the chat and faq are side by side */
 .ai-interface {
     flex: 1;
     display: flex;
@@ -527,6 +588,7 @@ input[type="text"]:focus {
     height: 100%;
 }
 
+/* we added this to the panels so that they share the space */
 .faq-panel,
 .chat-panel {
     flex: 1;
@@ -534,6 +596,7 @@ input[type="text"]:focus {
     flex-direction: column;
 }
 
+/* we added this to the chat container so that the messages are held */
 .chat-container {
     flex: 1;
     display: flex;
@@ -544,6 +607,7 @@ input[type="text"]:focus {
     overflow: hidden;
 }
 
+/* we added this to the message area so that it handles scrolling */
 .chat-messages {
     flex: 1;
     overflow-y: auto;
@@ -553,6 +617,7 @@ input[type="text"]:focus {
     gap: 1rem;
 }
 
+/* we added this to the message bubble so that it looks nice */
 .message {
     max-width: 85%;
     padding: 0.8rem 1rem;
@@ -560,6 +625,7 @@ input[type="text"]:focus {
     font-size: 0.9rem;
 }
 
+/* we added this to the assistant message so that it is grey */
 .message.assistant {
     align-self: flex-start;
     background: #334155;
@@ -567,6 +633,7 @@ input[type="text"]:focus {
     border-bottom-left-radius: 2px;
 }
 
+/* we added this to the user message so that it is green */
 .message.user {
     align-self: flex-end;
     background: var(--accent-primary);
@@ -574,6 +641,7 @@ input[type="text"]:focus {
     border-bottom-right-radius: 2px;
 }
 
+/* we added this to the input area so that you can type messages */
 .chat-input-area {
     display: flex;
     gap: 8px;
@@ -582,6 +650,7 @@ input[type="text"]:focus {
     border-top: 1px solid var(--border-color);
 }
 
+/* we added this to the chat input so that you can ask questions */
 #ai-chat-input {
     flex: 1;
     background: #0f172a;
@@ -591,6 +660,7 @@ input[type="text"]:focus {
     padding: 0.6rem;
 }
 
+/* we added this to the send button so that you can submit */
 #ai-send-btn {
     background: var(--accent-secondary);
     color: white;
@@ -602,21 +672,25 @@ input[type="text"]:focus {
 }
 
 /* Result colors */
+/* we added this to the stat up class so that gains are green */
 .stat-up {
     color: var(--success);
     font-weight: 600;
 }
 
+/* we added this to the stat down class so that losses are red */
 .stat-down {
     color: var(--danger);
     font-weight: 600;
 }
 
+/* we added this to the faq panel so that it has scroll */
 .faq-panel {
     overflow-y: auto;
     padding-right: 10px;
 }
 
+/* we added this to the faq title so that it is uppercase */
 .faq-panel h3 {
     color: var(--accent-secondary);
     font-size: 1.1rem;
@@ -625,6 +699,7 @@ input[type="text"]:focus {
     letter-spacing: 1px;
 }
 
+/* we added this to the faq item so that it has a border */
 .faq-item {
     margin-bottom: 1rem;
     padding: 1rem;
@@ -633,6 +708,7 @@ input[type="text"]:focus {
     border-left: 4px solid var(--accent-secondary);
 }
 
+/* we added this to the question so that it is bold */
 .faq-q {
     display: block;
     font-weight: 700;
@@ -641,6 +717,7 @@ input[type="text"]:focus {
     font-size: 0.9rem;
 }
 
+/* we added this to the answer so that text is readable */
 .faq-a {
     display: block;
     font-size: 0.85rem;
@@ -648,6 +725,7 @@ input[type="text"]:focus {
     line-height: 1.5;
 }
 
+/* we added this to the logout button so that you can sign out */
 #logout-btn {
     background-color: hsl(0, 92%, 65%);
     color: white;
@@ -656,15 +734,18 @@ input[type="text"]:focus {
     font-size: 1.1em;
 }
 
+/* we added this to the display name so that you see who is logged in */
 #display-name {
     font-size: 1.3em;
     font-weight: bold;
 }
 
+/* we added this to the user badge so that the font is monospace */
 .userbadge {
     font-family: 'Courier New', Courier, monospace
 }
 
+/* we added this to the keyframes so that things fade in smoothly */
 @keyframes fadeIn {
     from {
         opacity: 0;
